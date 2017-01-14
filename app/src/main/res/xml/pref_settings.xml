@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_header_general"
+        android:key="pref_key_storage_settings">
+
+        <EditTextPreference
+            android:defaultValue="@string/default_api_pattern"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="textUri"
+            android:key="jeedom_api_url"
+            android:ems="10"
+            android:id="@+id/jeedomApiUrl"
+            android:title="@string/pref_title_jeedom_api_url" />
+
+        <EditTextPreference
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="textUri"
+            android:key="jeedom_api_key"
+            android:ems="10"
+            android:id="@+id/jeedomApiKey"
+            android:title="@string/pref_title_jeedom_api_key" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="@string/pref_header_data_sync"
+        android:key="pref_key_storage_settings">
+
+        <ListPreference
+            android:defaultValue="180"
+            android:entries="@array/pref_sync_frequency_titles"
+            android:entryValues="@array/pref_sync_frequency_values"
+            android:key="sync_frequency"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_sync_frequency" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_notifications"
+        android:key="pref_key_storage_settings">
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="notifications_new_message_vibrate"
+            android:title="@string/pref_title_vibrate" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

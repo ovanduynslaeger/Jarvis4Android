@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/content_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/app_bar_home"
+        tools:context="com.automation.jarvis.MainActivity"
+        android:weightSum="1">
+
+
+        <!-- Header -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:id="@+id/header"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:columnCount="4"
+            >
+
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle"
+                android:layout_gravity="center_horizontal"
+                />
+
+            <ImageButton
+                android:background="@drawable/circle"
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:background="@drawable/circle"
+                android:layout_columnWeight="1"
+                android:id="@+id/imageButton3"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:background="@drawable/circle"
+                android:id="@+id/imageButton4"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </GridLayout>
+
+        <!-- Content  -->
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:id="@+id/content1"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+                <ImageButton
+                    android:background="@drawable/bigcircle"
+                    android:id="@+id/imageBigButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/bigcontrolIconHeigh"
+                    />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+                <ImageButton
+                    android:background="@drawable/bigcircle"
+                    android:id="@+id/imageBigButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/bigcontrolIconHeigh" />
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/content2"
+            android:layout_below="@+id/content1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal">
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+                <ImageButton
+                    android:background="@drawable/bigcircle"
+                    android:id="@+id/imageBigButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/bigcontrolIconHeigh"
+                    />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+                <ImageButton
+                    android:background="@drawable/bigcircle"
+                    android:id="@+id/imageBigButton4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/bigcontrolIconHeigh" />
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- Footer -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:id="@+id/footer"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom ="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:columnCount="4"
+            >
+
+            <ImageButton
+                android:id="@+id/imageButton5"
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle"
+                android:layout_gravity="center_horizontal"
+                />
+
+            <ImageButton
+                android:background="@drawable/circle"
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:id="@+id/imageButton6"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:background="@drawable/circle"
+                android:layout_columnWeight="1"
+                android:id="@+id/imageButton7"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:src="@drawable/ic_filter_tilt_shift_black_24dp"
+                android:layout_columnWeight="1"
+                android:background="@drawable/circle"
+                android:id="@+id/imageButton8"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </GridLayout>
+
+    </RelativeLayout>
