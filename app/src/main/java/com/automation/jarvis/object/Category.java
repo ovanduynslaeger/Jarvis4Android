@@ -58,5 +58,9 @@ public class Category {
         this.id = id;
     }
 
+    public String toString() {
+        return "Category[id="+id+",name="+name+",forColor="+forColor+",Visible="+visible+"]";
+    }
+
 
 }

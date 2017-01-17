@@ -600,6 +600,9 @@ public class AutomationGatewayApi {
                 Iterator keys = cat.keys();
 
                 //Iterate on device
+                Device dev = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie"));
+                dev = setControls(dev, deviceJsonStr);
+
                 while(keys.hasNext()) {
                     String currentDynamicKey = (String)keys.next();
                     Log.v(TAG,"Key = " + currentDynamicKey);
@@ -611,16 +614,15 @@ public class AutomationGatewayApi {
                     //Is Active ?
                     if (currentDynamicValue.equals("1")) {
                         //Activate category
+                        Log.v(TAG,"Activate category :" + currentDynamicKey);
                         mAuto.getCategories().get(currentDynamicKey).setVisible(true);
+                        dev.addCategory(currentDynamicKey);
                     }
                     Log.v(TAG,"Device found :" + deviceJsonStr.getString("name"));
-                    Device dev = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie"));
-
-                    setControls(dev, deviceJsonStr);
-
-
                     // do something here with the value...
                 }
+                mAuto.getDevices().add(dev);
+
             }
         }
         catch (final JSONException e) {
@@ -629,7 +631,7 @@ public class AutomationGatewayApi {
 
     }
 
-    private static void setControls(Device dev, JSONObject device) {
+    private static Device setControls(Device dev, JSONObject device) {
         try {
             JSONArray ctrls = device.getJSONArray("cmds");
 
@@ -652,12 +654,13 @@ public class AutomationGatewayApi {
         catch (final JSONException e) {
             Log.e(TAG, "Json parsing error: " + e.getMessage());
         }
+        return dev;
 
     }
 
     private void initCategories() {
         String[] jeedomCat = { "heating","security","energy","light","automatism","multimedia","default"};
-        String[] libCat = { "Chauffage","Securité","Ennergie","Lumière","Automatisme","Media","Defaut"};
+        String[] libCat = { "Chauffage","Securité","Energie","Lumière","Automatisme","Media","Defaut"};
         String[] foreColor= { "#2196f3","#2196f3","#2196f3","#2196f3","#009688","#2196f3","#2196f3"};
 
         for (int i = 0; i < jeedomCat.length;  i++) {

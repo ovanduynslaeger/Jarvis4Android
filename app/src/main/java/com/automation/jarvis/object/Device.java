@@ -68,6 +68,11 @@ public class Device {
         return this.controls.size() > 2;
     }
 
+    public String toString() {
+        return "Device[id="+id+",name="+name+",type="+type+",state="+state+"categories="+categories+"]";
+    }
+
+
 }
 
 
