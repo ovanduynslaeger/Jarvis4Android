@@ -16,6 +16,7 @@ public class DevicesListActivity extends ListActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     int id;
+    String value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +26,15 @@ public class DevicesListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setupActionBar();
 
-        //id = this.getIntent().getIntExtra("by",new Integer(-1));
+        id = this.getIntent().getIntExtra("by",new Integer(-1));
 
-        //if (id == R.id.nav_category) {
-            Category cat = AutomationGatewayApi.getInstance(this).getAutomation().getCategories().get("automatism");
+        //Value of category or location
+        value = this.getIntent().getStringExtra("value");
+
+        if (id == R.id.nav_category) {
+            Category cat = AutomationGatewayApi.getInstance(this).getAutomation().getCategories().get(value);
             values = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByCategory(cat);
-        //}
+        }
 
         /*
         Device bureau = new Device("B","Bureau","SHUTTER");

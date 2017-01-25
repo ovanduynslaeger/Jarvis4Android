@@ -87,6 +87,11 @@ public class HomeActivity extends AppCompatActivity
             Intent i = new Intent(this, CategoryActivity.class);
             i.putExtra("by",R.id.nav_location);
             startActivity(i);
+        } else if (id == R.id.test_device) {
+            Intent i = new Intent(this, DevicesListActivity.class);
+            i.putExtra("by",R.id.nav_category);
+            i.putExtra("value","light");
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

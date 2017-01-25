@@ -10,6 +10,27 @@
     android:layout_width="fill_parent"
     android:layout_height="@dimen/deviceIconHeigh">
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/deviceIconWidth"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:id="@+id/device_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/deviceTextMargin"
+        android:gravity="center_vertical"
+        android:text="Template"
+        android:textSize="@dimen/deviceTextSize"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_alignParentBottom="true" />
+
     <ImageButton
         android:id="@+id/first_action"
         android:layout_width="@dimen/controlIconWidth"
@@ -35,25 +56,6 @@
         android:background="@color/controlColorBackground"
         />
 
-    <TextView
-        android:id="@+id/device_name"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/deviceTextMargin"
-        android:gravity="center_vertical"
-        android:text="Template"
-        android:textSize="@dimen/deviceTextSize"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_alignParentBottom="true" />
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="@dimen/deviceIconWidth"
-        android:layout_height="wrap_content"
-        android:background="@drawable/circle"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
 

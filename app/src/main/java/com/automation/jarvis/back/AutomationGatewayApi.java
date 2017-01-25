@@ -13,6 +13,7 @@ import com.automation.jarvis.object.Automation;
 import com.automation.jarvis.object.Category;
 import com.automation.jarvis.object.Control;
 import com.automation.jarvis.object.Device;
+import com.automation.jarvis.object.Info;
 import com.automation.jarvis.object.Location;
 import com.automation.jarvis.util.HttpHandler;
 
@@ -52,16 +53,19 @@ public class AutomationGatewayApi {
 
     private static String JEEDOM_API_PREFIX = "http://192.168.0.4/core/api/myJeeApi.php?";
     private static String JEEDOM_API_KEY = "ubgd1fy5u3l9cb7uftex";
-    private static String JEEDOM_API_CMDREQUESTPATTERN = "request={\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"cmd::execCmd\",\"params\":{\" + apikey\":\"@APIKEY\",\"id\": '@ID' }}";
+    private static String JEEDOM_API_CMDREQUESTPATTERN = "request={\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"cmd::execCmd\",\"params\":{\"apikey\":\"@APIKEY\",\"id\":\"@ID\"}}";
     private static String JEEDOM_API_SLICERREQUESTPATTERN = "request={\"jsonrpc\":\"2.0\",\"method\":\"cmd::execCmd\",\"params\":{\"apikey\":\"@APIKEY\",\"id\": \"@ID\", \"options\":{\"slider\": \"@SLIDER\"}}}";
     private static String JEEDOM_API_GETDEVICES = "request={\"jsonrpc\":\"2.0\",\"method\":\"object::fullEq\",\"params\":{\"apikey\":\"@APIKEY\"}}";
 
 
 
-    public void sendCmd(String cmdId) {
+    public String sendCmd(String cmdId) {
         String url = getUrl(JEEDOM_API_CMDREQUESTPATTERN,cmdId);
-        Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_SHORT );
+        Log.d(this.getClass().getName(),url);
+        String ret = gatewayRequestCmd(url);
+        Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_LONG );
         toast.show();
+        return ret;
     }
 
     public void sendSlicerCmd(String cmdId) {
@@ -82,7 +86,7 @@ public class AutomationGatewayApi {
         return url;
     }
 
-    private String getDevicesMoke() {
+    private JSONObject getDevicesMoke() {
       String json;
       json ="{\n" +
               "    \"jsonrpc\":\"2.0\",\n" +
@@ -183,6 +187,7 @@ public class AutomationGatewayApi {
               "                        \"border-radiusmobile\":\"\",\n" +
               "                        \"parameters\":{\n" +
               "                            \"categorie\":\"SHUTTER\",\n" +
+              "                            \"ondashboard\":\"true\",\n" +
               "                            \"photo\":\"\\/front\\/static\\/images\\/SHUTTER.svg\"\n" +
               "                        }\n" +
               "                    },\n" +
@@ -239,6 +244,41 @@ public class AutomationGatewayApi {
               "                            },\n" +
               "                            \"value\":\"\",\n" +
               "                            \"isVisible\":\"1\"\n" +
+              "                        },\n" +
+              "                        {\n" +
+              "                            \"id\": \"104\",\n" +
+              "                            \"logicalId\": null,\n" +
+              "                            \"eqType\": \"virtual\",\n" +
+              "                            \"name\": \"state\",\n" +
+              "                            \"order\": \"0\",\n" +
+              "                            \"type\": \"info\",\n" +
+              "                            \"subType\": \"binary\",\n" +
+              "                            \"eqLogic_id\": \"21\",\n" +
+              "                            \"isHistorized\": \"0\",\n" +
+              "                            \"unite\": \"\",\n" +
+              "                            \"configuration\": {\n" +
+              "                                \"virtualAction\": 1,\n" +
+              "                                \"calcul\": \"\",\n" +
+              "                                \"returnStateValue\": \"\",\n" +
+              "                                \"returnStateTime\": \"\",\n" +
+              "                                \"minValue\": \"\",\n" +
+              "                                \"maxValue\": \"\",\n" +
+              "                                \"value\": 0\n" +
+              "                            },\n" +
+              "                            \"template\": null,\n" +
+              "                            \"display\": {\n" +
+              "                                \"invertBinary\": \"0\",\n" +
+              "                                \"showOncategory\": 1,\n" +
+              "                                \"showStatsOncategory\": 0,\n" +
+              "                                \"showNameOncategory\": 1,\n" +
+              "                                \"showOnstyle\": 1,\n" +
+              "                                \"showStatsOnstyle\": 0,\n" +
+              "                                \"showNameOnstyle\": 1\n" +
+              "                            },\n" +
+              "                            \"html\": null,\n" +
+              "                            \"value\": null,\n" +
+              "                            \"isVisible\": \"0\",\n" +
+              "                            \"state\": 1\n" +
               "                        },\n" +
               "                        {\n" +
               "                            \"id\":\"868\",\n" +
@@ -434,7 +474,7 @@ public class AutomationGatewayApi {
               "                                \"forceReturnLineAfter\":\"0\",\n" +
               "                                \"parameters\":{\n" +
               "                                    \"style\":\"button\",\n" +
-              "                                    \"icon\":\"icons:power-settings-new\"\n" +
+              "                                    \"icon\":\"ic_power_settings_new_black_24dp\"\n" +
               "                                }\n" +
               "                            },\n" +
               "                            \"html\":{\n" +
@@ -447,6 +487,41 @@ public class AutomationGatewayApi {
               "                            },\n" +
               "                            \"value\":\"\",\n" +
               "                            \"isVisible\":\"1\"\n" +
+              "                        },\n" +
+              "                        {\n" +
+              "                            \"id\": \"104\",\n" +
+              "                            \"logicalId\": null,\n" +
+              "                            \"eqType\": \"virtual\",\n" +
+              "                            \"name\": \"state\",\n" +
+              "                            \"order\": \"0\",\n" +
+              "                            \"type\": \"info\",\n" +
+              "                            \"subType\": \"binary\",\n" +
+              "                            \"eqLogic_id\": \"21\",\n" +
+              "                            \"isHistorized\": \"0\",\n" +
+              "                            \"unite\": \"\",\n" +
+              "                            \"configuration\": {\n" +
+              "                                \"virtualAction\": 1,\n" +
+              "                                \"calcul\": \"\",\n" +
+              "                                \"returnStateValue\": \"\",\n" +
+              "                                \"returnStateTime\": \"\",\n" +
+              "                                \"minValue\": \"\",\n" +
+              "                                \"maxValue\": \"\",\n" +
+              "                                \"value\": 0\n" +
+              "                            },\n" +
+              "                            \"template\": null,\n" +
+              "                            \"display\": {\n" +
+              "                                \"invertBinary\": \"0\",\n" +
+              "                                \"showOncategory\": 1,\n" +
+              "                                \"showStatsOncategory\": 0,\n" +
+              "                                \"showNameOncategory\": 1,\n" +
+              "                                \"showOnstyle\": 1,\n" +
+              "                                \"showStatsOnstyle\": 0,\n" +
+              "                                \"showNameOnstyle\": 1\n" +
+              "                            },\n" +
+              "                            \"html\": null,\n" +
+              "                            \"value\": null,\n" +
+              "                            \"isVisible\": \"0\",\n" +
+              "                            \"state\": 0\n" +
               "                        },\n" +
               "                        {\n" +
               "                            \"id\":\"890\",\n" +
@@ -486,7 +561,7 @@ public class AutomationGatewayApi {
               "                                \"forceReturnLineAfter\":\"0\",\n" +
               "                                \"parameters\":{\n" +
               "                                    \"style\":\"button\",\n" +
-              "                                    \"icon\":\"icons:highlight-off\"\n" +
+              "                                    \"icon\":\"ic_highlight_off_black_24dp\"\n" +
               "                                }\n" +
               "                            },\n" +
               "                            \"html\":{\n" +
@@ -523,8 +598,46 @@ public class AutomationGatewayApi {
               "    ]\n" +
               "}\n";
 
-      return json;
+        JSONObject js = null;
+        try {
+            js = new JSONObject(json);
+        } catch (final JSONException e) {
+            Log.e(TAG, "Json convertion error: " + e.getMessage());
+        }
+
+      return js;
     }
+
+    private String gatewayRequestCmd(String url) {
+// Tag used to cancel the request
+        final ProgressDialog pDialog = new ProgressDialog(mCtx);
+        pDialog.setMessage("Sending...");
+        pDialog.show();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                url, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "Response");
+                        Log.d(TAG, response.toString());
+                        pDialog.hide();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Error: " + error.getMessage());
+                // hide the progress dialog
+                pDialog.hide();
+            }
+        });
+        HttpHandler.getInstance(mCtx).addToRequestQueue(jsonObjReq);
+        return "";
+
+    }
+
 
     private String gatewayRequest(String url) {
 // Tag used to cancel the request
@@ -540,6 +653,7 @@ public class AutomationGatewayApi {
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
                         manageResponse(response);
+                        //manageResponse(getDevicesMoke());
 
                         pDialog.hide();
                     }
@@ -600,29 +714,31 @@ public class AutomationGatewayApi {
                 Iterator keys = cat.keys();
 
                 //Iterate on device
-                Device dev = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie"));
-                dev = setControls(dev, deviceJsonStr);
+                Device dev = addDevice(deviceJsonStr);
 
-                while(keys.hasNext()) {
-                    String currentDynamicKey = (String)keys.next();
-                    Log.v(TAG,"Key = " + currentDynamicKey);
+                if (dev!=null) {
+                    while (keys.hasNext()) {
+                        String currentDynamicKey = (String) keys.next();
+                        Log.v(TAG, "Key = " + currentDynamicKey);
 
-                    // get the value of the dynamic key
-                    String currentDynamicValue = cat.getString(currentDynamicKey);
-                    Log.v(TAG,"Value = " + currentDynamicValue);
+                        // get the value of the dynamic key
+                        String currentDynamicValue = cat.getString(currentDynamicKey);
+                        Log.v(TAG, "Value = " + currentDynamicValue);
 
-                    //Is Active ?
-                    if (currentDynamicValue.equals("1")) {
-                        //Activate category
-                        Log.v(TAG,"Activate category :" + currentDynamicKey);
-                        mAuto.getCategories().get(currentDynamicKey).setVisible(true);
-                        dev.addCategory(currentDynamicKey);
+                        //Is Active ?
+                        if (currentDynamicValue.equals("1")) {
+                            //Activate category
+                            Log.v(TAG, "Activate category :" + currentDynamicKey);
+                            mAuto.getCategories().get(currentDynamicKey).setVisible(true);
+                            dev.addCategory(currentDynamicKey);
+                        }
+                        Log.v(TAG, "Device found :" + deviceJsonStr.getString("name"));
+                        // do something here with the value...
                     }
-                    Log.v(TAG,"Device found :" + deviceJsonStr.getString("name"));
-                    // do something here with the value...
+                    Log.v(TAG, "NEW DEVICE");
+                    Log.v(TAG, dev.toString());
+                    mAuto.getDevices().add(dev);
                 }
-                mAuto.getDevices().add(dev);
-
             }
         }
         catch (final JSONException e) {
@@ -631,22 +747,37 @@ public class AutomationGatewayApi {
 
     }
 
-    private static Device setControls(Device dev, JSONObject device) {
+    private static Device addDevice(JSONObject deviceJsonStr) {
+
+
+        Device device = null;
         try {
-            JSONArray ctrls = device.getJSONArray("cmds");
+            device = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie"));
+            JSONArray ctrls = deviceJsonStr.getJSONArray("cmds");
 
             //Iterate on device
             for (int i = 0; i < ctrls.length(); i++) {
                 JSONObject cmd = ctrls.getJSONObject(i);
 
-                Log.v(TAG,"Control found = " + cmd.getString("name"));
+                Log.v(TAG,"Control found = " + cmd.getString("name") + "/"+cmd.getString("isVisible")+"/"+cmd.getString("type"));
                 //is Visible
+                //info
+                if (cmd.getString("type").equals("info")) {
+                    Info info = new Info(cmd.getString("id"),cmd.getString("name"));
+                    info.setValue(cmd.getString("state"));
+                    Log.v(TAG,"Add info " + cmd.getString("name"));
+                    device.getInfos().add(info);
+                }
+
+                //action/controls
                 if (cmd.getString("isVisible").equals("1") && cmd.getString("type").equals("action")) {
                     Control ctrl = new Control(cmd.getString("id"),cmd.getString("name"));
                     ctrl.setIcon(cmd.getJSONObject("display").getJSONObject("parameters").getString("icon"));
                     ctrl.setStyle(cmd.getJSONObject("display").getJSONObject("parameters").getString("style"));
-
-                    dev.addControl(ctrl);
+                    if (cmd.getJSONObject("display").getJSONObject("parameters").has("ondashboard"))
+                        ctrl.setOnDashboard(new Boolean(cmd.getJSONObject("display").getJSONObject("parameters").getString("ondashboard")));
+                    Log.v(TAG,"Add control " + cmd.getString("name"));
+                    device.getControls().add(ctrl);
                 }
 
             }
@@ -654,14 +785,14 @@ public class AutomationGatewayApi {
         catch (final JSONException e) {
             Log.e(TAG, "Json parsing error: " + e.getMessage());
         }
-        return dev;
+        return device;
 
     }
 
     private void initCategories() {
         String[] jeedomCat = { "heating","security","energy","light","automatism","multimedia","default"};
         String[] libCat = { "Chauffage","Securité","Energie","Lumière","Automatisme","Media","Defaut"};
-        String[] foreColor= { "#2196f3","#2196f3","#2196f3","#2196f3","#009688","#2196f3","#2196f3"};
+        String[] foreColor= { "#2196f3","#2196f3","#2196f3","#DF0101","#088A85","#2196f3","#2196f3"};
 
         for (int i = 0; i < jeedomCat.length;  i++) {
             mAuto.getCategories().put(jeedomCat[i], new Category(jeedomCat[i], libCat[i],foreColor[i]));

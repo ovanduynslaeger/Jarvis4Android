@@ -1,5 +1,9 @@
 package com.automation.jarvis.object;
 
+import android.content.Context;
+
+import com.automation.jarvis.back.AutomationGatewayApi;
+
 /**
  * Created by Olivier on 31/12/2016.
  */
@@ -13,10 +17,20 @@ public class Control {
     public String style;
     public String icon;
     public String id;
+
+    public boolean isFavorite() {
+        return onDashboard;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.onDashboard = favorite;
+    }
+
     public String minValue;
     public String maxValue;
     public String step;
     public String defaultValue;
+    public boolean onDashboard;
 
     public String getStyle() {
         return style;
@@ -28,12 +42,20 @@ public class Control {
 
     public Control(String id, String style) {
         this.id = id;
-
+        this.onDashboard=false;
         this.style = style;
     }
 
     public String getId() {
         return id;
+    }
+
+    public boolean isOnDashboard() {
+        return onDashboard;
+    }
+
+    public void setOnDashboard(boolean onDashboard) {
+        this.onDashboard = onDashboard;
     }
 
     public boolean isMini() {
@@ -83,5 +105,15 @@ public class Control {
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
+
+    public String toString() {
+        String str = "Control[id="+id+"]";
+        return str;
+    }
+
+    public String execute(Context context) {
+        return AutomationGatewayApi.getInstance(context).sendCmd(this.getId());
+    }
+
 
 }

@@ -1,14 +1,18 @@
 package com.automation.jarvis;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.automation.jarvis.back.AutomationGatewayApi;
+import com.automation.jarvis.object.Category;
 
-//public class CategoryActivity extends AppCompatActivity {
-public class CategoryActivity extends ListActivity {
+import java.util.ArrayList;
+
+public class CategoryActivity extends AppCompatActivity {
+//public class CategoryActivity extends ListActivity {
 
 
     ListView listView ;
@@ -20,30 +24,38 @@ public class CategoryActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         ctx = this.getApplicationContext();
         //setContentView(R.layout.activity_category);
-        String[] values= {};
+        //String[] values= {};
+
+        ArrayList<Category> values = new ArrayList<Category>();
 
 
         id = this.getIntent().getIntExtra("by",new Integer(-1));
 
         if (id == R.id.nav_category) {
             listView = (ListView) findViewById(R.id.list_category);
-            values = AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesName();
+            //values = AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesName();
+            values = AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesList();
         }
         if (id == R.id.nav_location) {
             listView = (ListView) findViewById(R.id.list_category);
-            values = AutomationGatewayApi.getInstance(this).getAutomation().getLocationsName();
+            values = AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesList();
+            //values = AutomationGatewayApi.getInstance(this).getAutomation().getLocationsName();
         }
 
        /* ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, values);
                 */
 
-        CategoryListAdapter adap = new CategoryListAdapter(AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesList(),ctx);
+        ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this,
+                android.R.layout.simple_list_item_1, values);
+
+
 
         // Assign adapter to ListView
-        setListAdapter(adap);
+        //setListAdapter(adap);
 
         //listView.setAdapter(adapter);
+
         /*
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -55,7 +67,8 @@ public class CategoryActivity extends ListActivity {
 
             }
         });
-        */
+    */
+
 
     }
 

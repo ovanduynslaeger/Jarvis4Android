@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,11 +97,11 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                 //CharSequence text = "Second " + getItem(position).getName();
                 if (v.getTag() != null) {
                     Control ctrl = (Control) v.getTag();
-                    AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId());
-                    notifyDataSetChanged();
+                    String ret= ctrl.execute(context);
+                    Log.d(this.getClass().getName(),ret);
+                    //notifyDataSetChanged();
                 } else {
                     //More
-                    AutomationGatewayApi.getInstance(context).sendCmd("more");
                     expand(context,thisControls);
                 }
             }
@@ -110,30 +111,50 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     public void showDevice(Device dev, ImageView icon, ImageButton first, ImageButton second,View controls) {
-        if (dev.getType() == "SHUTTER" ) {
+        Log.d(this.getClass().getName(),"Device type is "+dev.getType());
+            Log.d(this.getClass().getName(),"Device "+dev.getName()+" is shutter");
             // @TODO: To move to control class
             if (dev.hasMoreControls()) {
+                Log.d(this.getClass().getName(),"Device "+dev.getName()+" has more controls");
                 first.setImageResource(R.drawable.ic_more_horiz_black_24dp);
                 first.setTag(null);
                 second.setVisibility(View.INVISIBLE);
+                showControls((GridLayout) controls,context,dev);
             } else {
+                Log.d(this.getClass().getName(),"Device "+dev.getName()+" has 2 controls");
                 second.setVisibility(View.VISIBLE);
-                showControl(dev.getControls().get(0),0,first);
-                showControl(dev.getControls().get(1),1,second);
+                if (dev.getControls().size()>=1) {
+                    showControl(dev.getControls().get(0), 0, first);
+                }
+                if (dev.getControls().size()>=2) {
+                    showControl(dev.getControls().get(1), 1, second);
+                }
             }
-            //showControls((GridLayout) controls,context,dev);
-            setControlColor(icon, AutomationGatewayApi.getInstance(context).getAutomation().getCategories().get("automatism").getForColor());
+
+            setControlColor(icon, AutomationGatewayApi.getInstance(context).getAutomation().getCategories().get("light").getForColor());
             //setControlColor(icon, ContextCompat.getColor(context, R.color.controlColorBackground));
-            if (dev.getState() == Device.DeviceState.UP) icon.setImageResource(R.drawable.ic_shutter_up);
-            if (dev.getState() == Device.DeviceState.DOWN) icon.setImageResource(R.drawable.ic_shutter_down);
-        }
+        if (dev.getType().equals("SHUTTER") ) {
+            if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_shutter_up);
+            if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_shutter_down);
+        } else
+            if (dev.getType().equals("SOCKET") ) {
+                if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_light_on);
+                if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_light_off);
+            } else
+                icon.setImageResource(R.drawable.ic_help_outline_black_24dp);
     }
 
     public void showControl(Control ctrl, int pos, ImageButton action) {
         Resources res = context.getResources();
+        Log.d(this.getClass().getName(),"Icon is "+ctrl.getIcon());
         int resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
-        action.setTag(ctrl);
-        action.setImageResource(resID);
+            Log.d(this.getClass().getName(),"Icon ResID is "+resID);
+            action.setTag(ctrl);
+        if (resID != 0) {
+            action.setImageResource(resID);
+        } else {
+            action.setImageResource(R.drawable.ic_help_outline_black_24dp);
+        }
     }
 
     public void showControls(GridLayout v, Context context, Device dev) {
@@ -141,7 +162,8 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         for (int i = 0; i < dev.getControls().size(); i++) {
             Control ctrl  = dev.getControls().get(i);
             ImageButton button = new ImageButton(context);
-            setControlColor(button,Color.LTGRAY);
+            button.setBackgroundColor(Color.parseColor("#A4A4A4"));
+            //setControlColor(button,"#A4A4A4");
             Resources res = context.getResources();
             int resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
             button.setBackground(context.getDrawable(R.drawable.circle));

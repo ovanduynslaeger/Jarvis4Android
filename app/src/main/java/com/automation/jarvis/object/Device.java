@@ -8,11 +8,10 @@ import java.util.ArrayList;
 
 public class Device {
     //public enum DeviceType { SHUTTER };
-    public enum DeviceState { ON, OFF, UP, DOWN };
+
     public ArrayList<String> categories = new ArrayList<String>();
 
     public String name;
-    public DeviceState state;
     public String type;
     public String id;
 
@@ -29,6 +28,7 @@ public class Device {
     }
 
     public ArrayList<Control> controls = new ArrayList<Control>();
+    public ArrayList<Info> infos = new ArrayList<Info>();
 
     public Device(String id, String name, String type) {
         this.id = id;
@@ -48,20 +48,30 @@ public class Device {
                 return name;
     }
 
-    public DeviceState getState() {
+    public String getState() {
+        String state = "0";
+        for (int i=0; i<infos.size(); i++) {
+            if (infos.get(i).getName().equals("state")) {
+                state = infos.get(i).getValue();
+            }
+        }
         return state;
-    }
-
-    public void setState(DeviceState state) {
-        this.state = state;
     }
 
     public ArrayList<Control> getControls() {
         return controls;
     }
 
+    public ArrayList<Info> getInfos() {
+        return infos;
+    }
+
     public void addControl(Control ctrl) {
         controls.add(ctrl);
+    }
+
+    public void addInfo(Info info) {
+        infos.add(info);
     }
 
     public boolean hasMoreControls() {
@@ -69,7 +79,14 @@ public class Device {
     }
 
     public String toString() {
-        return "Device[id="+id+",name="+name+",type="+type+",state="+state+"categories="+categories+"]";
+        String str = "Device[id="+id+",name="+name+",type="+type+",categories="+categories+"]";
+        for (int i=0; i<controls.size(); i++) {
+            str = str + controls.get(i).toString();
+        }
+        for (int i=0; i<infos.size(); i++) {
+            str = str + infos.get(i).toString();
+        }
+        return str;
     }
 
 
