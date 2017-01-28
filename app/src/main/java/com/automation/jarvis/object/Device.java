@@ -8,11 +8,12 @@ import java.util.ArrayList;
 
 public class Device {
     //public enum DeviceType { SHUTTER };
+    private String DEFAULT_TYPE = "UNKNOWN";
 
     public ArrayList<String> categories = new ArrayList<String>();
 
     public String name;
-    public String type;
+    public String type = DEFAULT_TYPE;
     public String id;
 
     public void addCategory(String category) {
@@ -37,7 +38,9 @@ public class Device {
     }
 
     public String getType() {
-        return type;
+        String t = type;
+        if (t == null || t.isEmpty()) t=DEFAULT_TYPE;
+        return t;
     }
 
     public void setType(String type) {

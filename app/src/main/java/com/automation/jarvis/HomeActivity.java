@@ -90,7 +90,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.test_device) {
             Intent i = new Intent(this, DevicesListActivity.class);
             i.putExtra("by",R.id.nav_category);
-            i.putExtra("value","light");
+            i.putExtra("value","multimedia");
             startActivity(i);
         }
 

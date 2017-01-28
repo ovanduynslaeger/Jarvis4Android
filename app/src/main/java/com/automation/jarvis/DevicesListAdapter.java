@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.SeekBar;
+import android.widget.Space;
 import android.widget.TextView;
 
 import com.automation.jarvis.back.AutomationGatewayApi;
@@ -53,6 +56,8 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         //just return 0 if your list items do not have an Id variable.
     }
 
+
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -78,7 +83,7 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                 //list.remove(position); //or some other task
                 if (v.getTag() != null) {
                     Control ctrl = (Control) v.getTag();
-                    AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId());
+                    AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId(),ctrl.isToAdvertise());
                     notifyDataSetChanged();
                 } else {
                     //More
@@ -140,16 +145,19 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             if (dev.getType().equals("SOCKET") ) {
                 if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_light_on);
                 if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_light_off);
-            } else
-                icon.setImageResource(R.drawable.ic_help_outline_black_24dp);
+            }
+            //icon.setImageResource(R.drawable.ic_help_outline_black_24dp);
     }
 
     public void showControl(Control ctrl, int pos, ImageButton action) {
         Resources res = context.getResources();
         Log.d(this.getClass().getName(),"Icon is "+ctrl.getIcon());
-        int resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
-            Log.d(this.getClass().getName(),"Icon ResID is "+resID);
+
+        int resID = 0;
+        if (ctrl.getIcon() != null) {
+            resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
             action.setTag(ctrl);
+        }
         if (resID != 0) {
             action.setImageResource(resID);
         } else {
@@ -159,21 +167,83 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
 
     public void showControls(GridLayout v, Context context, Device dev) {
 
+        int col=0;
         for (int i = 0; i < dev.getControls().size(); i++) {
-            Control ctrl  = dev.getControls().get(i);
-            ImageButton button = new ImageButton(context);
-            button.setBackgroundColor(Color.parseColor("#A4A4A4"));
-            //setControlColor(button,"#A4A4A4");
-            Resources res = context.getResources();
-            int resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
-            button.setBackground(context.getDrawable(R.drawable.circle));
-            button.setImageResource(resID);
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            button.setLayoutParams(params);
-            v.addView(button);
+            Control ctrl = dev.getControls().get(i);
+            if (ctrl.getStyle().equals(Control.STYLE_BUTTON)) {
+                ImageButton button = new ImageButton(context);
+                //button.setBackgroundColor(Color.parseColor("#A4A4A4"));
+                Resources res = context.getResources();
+                if (ctrl.getIcon() != null) {
+                    int resID = res.getIdentifier(ctrl.getIcon(), "drawable", context.getPackageName());
+                    button.setImageResource(resID);
+                }
+                button.setBackground(context.getDrawable(R.drawable.circle));
+                setControlColor(button, "#A4A4A4");
+
+
+                GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+                lp.setGravity(Gravity.CENTER_HORIZONTAL);
+                lp.setMargins(0, 20, 0, 20);
+                lp.columnSpec = spec;
+                v.addView(button, lp);
+                col++;
+            }
+            if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) {
+
+                ImageButton button = new ImageButton(context);
+                //button.setBackgroundColor(Color.parseColor("#A4A4A4"));
+                Resources res = context.getResources();
+                if (ctrl.getIcon() != null) {
+                    int resID = res.getIdentifier(ctrl.getIcon(), "drawable", context.getPackageName());
+                    button.setImageResource(resID);
+                }
+                button.setBackground(context.getDrawable(R.drawable.circle));
+                setControlColor(button, "#A4A4A4");
+
+
+                GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+                lp.setGravity(Gravity.CENTER_HORIZONTAL);
+                lp.setMargins(0, 20, 0, 20);
+                lp.columnSpec = spec;
+                v.addView(button, lp);
+                col++;
+
+                SeekBar sb = new SeekBar(context);
+                sb.setMax(ctrl.getMaxValue());
+                sb.setBottom(0);
+                //GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1.0f);
+                GridLayout.LayoutParams lp2 = new GridLayout.LayoutParams();
+                lp2.columnSpec = GridLayout.spec(0, 5-col%5);
+                //lp2.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                //lp2.setMargins(0, 20, 0, 20);
+                //lp2.setGravity(Gravity.FILL_HORIZONTAL);
+                v.addView(sb,lp2);
+                col++;
+            }
+
+            if (ctrl.isForceReturnLineAfter()) {
+                int gap = 5-col%5;
+                Log.d(this.getClass().getName(),"Gap = "+gap);
+                for (int j=0;j<gap;j++) {
+                    Log.d(this.getClass().getName(),"Force ReturnLineAfter");
+                    Space sp = new Space(context);
+                    v.addView(sp);
+                    /*
+                    TextView tx = new TextView(context);
+                    tx.setText("t");
+                    v.addView(tx);
+                    */
+                    col++;
+
+                }
+            }
+
+            //  GridLayout.spec(columnNumber,columnSpan);
+
         }
-        //android:layout_columnWeight="1"
-        //android:layout_gravity="center_horizontal"
 
 
     }

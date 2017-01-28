@@ -65,6 +65,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dip"
+        android:layout_marginLeft="10dip"
         android:visibility="gone"
         android:columnCount="5">
     </GridLayout>

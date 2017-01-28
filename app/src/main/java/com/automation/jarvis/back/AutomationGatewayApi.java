@@ -59,12 +59,14 @@ public class AutomationGatewayApi {
 
 
 
-    public String sendCmd(String cmdId) {
+    public String sendCmd(String cmdId, boolean toAdvertise) {
         String url = getUrl(JEEDOM_API_CMDREQUESTPATTERN,cmdId);
         Log.d(this.getClass().getName(),url);
         String ret = gatewayRequestCmd(url);
-        Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_LONG );
-        toast.show();
+        if (toAdvertise) {
+            Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_LONG );
+            toast.show();
+        }
         return ret;
     }
 
@@ -651,7 +653,6 @@ public class AutomationGatewayApi {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
                         manageResponse(response);
                         //manageResponse(getDevicesMoke());
 
@@ -751,8 +752,12 @@ public class AutomationGatewayApi {
 
 
         Device device = null;
+        String categorie=null;
         try {
-            device = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie"));
+            if (deviceJsonStr.has("display") && deviceJsonStr.getJSONObject("display").has("parameters") && deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("categorie") ) {
+                categorie = deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie");
+            }
+            device = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),categorie);
             JSONArray ctrls = deviceJsonStr.getJSONArray("cmds");
 
             //Iterate on device
@@ -771,11 +776,25 @@ public class AutomationGatewayApi {
 
                 //action/controls
                 if (cmd.getString("isVisible").equals("1") && cmd.getString("type").equals("action")) {
-                    Control ctrl = new Control(cmd.getString("id"),cmd.getString("name"));
-                    ctrl.setIcon(cmd.getJSONObject("display").getJSONObject("parameters").getString("icon"));
-                    ctrl.setStyle(cmd.getJSONObject("display").getJSONObject("parameters").getString("style"));
-                    if (cmd.getJSONObject("display").getJSONObject("parameters").has("ondashboard"))
-                        ctrl.setOnDashboard(new Boolean(cmd.getJSONObject("display").getJSONObject("parameters").getString("ondashboard")));
+                    Control ctrl = new Control(cmd.getString("id"), cmd.getString("name"));
+                    if (cmd.getJSONObject("display").has("forceReturnLineAfter"))
+                        ctrl.setForceReturnLineAfter(cmd.getJSONObject("display").getString("forceReturnLineAfter").equals("1"));
+                    if (cmd.has("display") && cmd.getJSONObject("display").has("parameters")) {
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon"))
+                           ctrl.setIcon(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon"));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.style"))
+                           ctrl.setStyle(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.style"));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("ondashboard"))
+                            ctrl.setOnDashboard(new Boolean(cmd.getJSONObject("display").getJSONObject("parameters").getString("ondashboard")));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("step"))
+                            ctrl.setStep(cmd.getJSONObject("display").getJSONObject("parameters").getString("step"));
+                    }
+                    if (cmd.has("configuration")) {
+                        if (cmd.getJSONObject("configuration").has("maxValue"))
+                            ctrl.setMaxValue(cmd.getJSONObject("configuration").getString("maxValue"));
+                        if (cmd.getJSONObject("configuration").has("minValue"))
+                            ctrl.setMinValue(cmd.getJSONObject("configuration").getString("minValue"));
+                    }
                     Log.v(TAG,"Add control " + cmd.getString("name"));
                     device.getControls().add(ctrl);
                 }
