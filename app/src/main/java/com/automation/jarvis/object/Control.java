@@ -1,8 +1,20 @@
 package com.automation.jarvis.object;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.SeekBar;
 
+import com.automation.jarvis.R;
 import com.automation.jarvis.back.AutomationGatewayApi;
+
+import java.util.ArrayList;
 
 /**
  * Created by Olivier on 31/12/2016.
@@ -176,6 +188,58 @@ public class Control {
     public String execute(Context context) {
         return AutomationGatewayApi.getInstance(context).sendCmd(this.getId(), toAdvertise);
     }
+
+    public ArrayList<View> getViews(Context context, int col) {
+        ArrayList<View> views = new ArrayList<View>();
+        ImageButton button = new ImageButton(context);
+
+        if (this.getStyle().equals(Control.STYLE_BUTTON) || this.getStyle().equals(Control.STYLE_SLIDER)) {
+            button = new ImageButton(context);
+            Resources res = context.getResources();
+            if (this.getIcon() != null) {
+                int resID = res.getIdentifier(this.getIcon(), "drawable", context.getPackageName());
+                button.setColorFilter(Color.WHITE);
+                button.setImageResource(resID);
+            }
+            button.setBackground(context.getDrawable(R.drawable.circle));
+            setControlColor(button, "#A4A4A4");
+
+
+            GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+            lp.setGravity(Gravity.CENTER_HORIZONTAL);
+            lp.setMargins(0, 20, 0, 20);
+            lp.columnSpec = spec;
+            button.setLayoutParams(lp);
+            views.add(button);
+        }
+
+        if (this.getStyle().equals(Control.STYLE_SLIDER)) {
+            SeekBar sb = new SeekBar(context);
+            sb.setMax(this.getMaxValue());
+            sb.setBottom(0);
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+            lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 4);
+            lp.setGravity(Gravity.FILL_HORIZONTAL | Gravity.CENTER);
+            sb.setLayoutParams(lp);
+            views.add(sb);
+
+        }
+
+        return views;
+    }
+
+    private void setControlColor(ImageView icon, String color) {
+        int c = Color.parseColor(color);
+        setControlColor(icon,c);
+    }
+
+    private void setControlColor(ImageView icon, int color) {
+        //ShapeDrawable shape = (ShapeDrawable) icon.getBackground();
+        GradientDrawable bgShape = (GradientDrawable) icon.getBackground();
+        bgShape.setColor(color);
+    }
+
 
 
 }
