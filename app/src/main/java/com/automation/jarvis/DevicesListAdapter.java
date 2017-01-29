@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
-import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 
@@ -24,6 +22,8 @@ import com.automation.jarvis.object.Device;
 import com.automation.jarvis.util.FX;
 
 import java.util.ArrayList;
+
+import static com.automation.jarvis.R.id.controls;
 
 /**
  * Created by Olivier on 31/12/2016.
@@ -56,61 +56,63 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         //just return 0 if your list items do not have an Id variable.
     }
 
-
-
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.activity_devices_list, null);
+
+            //Handle TextView and display string from your list
+            TextView listItemText = (TextView)view.findViewById(R.id.device_name);
+            listItemText.setText(list.get(position).getName());
+
+            //Handle buttons and add onClickListeners
+            ImageButton firstActionBtn = (ImageButton) view.findViewById(R.id.first_action);
+            ImageButton secondActionBtn = (ImageButton) view.findViewById(R.id.second_action);
+            ImageView icon = (ImageView) view.findViewById(R.id.icon);
+            thisControls = (GridLayout) view.findViewById(controls);
+
+            showDevice(list.get(position),icon,firstActionBtn, secondActionBtn, thisControls);
+
+            firstActionBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    //list.remove(position); //or some other task
+                    if (v.getTag() != null) {
+                        Control ctrl = (Control) v.getTag();
+                        AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId(),ctrl.isToAdvertise());
+                        notifyDataSetChanged();
+                    } else {
+                        //More
+                        View parent = (View) v.getParent().getParent();
+                        thisControls = (GridLayout) parent.findViewById(controls);
+                        expand(context,thisControls);
+                    }
+
+                }
+            });
+
+            secondActionBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    //do something
+                    //CharSequence text = "Second " + getItem(position).getName();
+                    if (v.getTag() != null) {
+                        Control ctrl = (Control) v.getTag();
+                        String ret= ctrl.execute(context);
+                        Log.d(this.getClass().getName(),ret);
+                        //notifyDataSetChanged();
+                    } else {
+                        //More
+                        expand(context,thisControls);
+                    }
+                }
+            });
+
+
         }
-        //Handle TextView and display string from your list
-        TextView listItemText = (TextView)view.findViewById(R.id.device_name);
-        listItemText.setText(list.get(position).getName());
 
-        //Handle buttons and add onClickListeners
-        ImageButton firstActionBtn = (ImageButton) view.findViewById(R.id.first_action);
-        ImageButton secondActionBtn = (ImageButton) view.findViewById(R.id.second_action);
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        thisControls = (GridLayout) view.findViewById(R.id.controls);
-
-        showDevice(list.get(position),icon,firstActionBtn, secondActionBtn, thisControls);
-
-        firstActionBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //list.remove(position); //or some other task
-                if (v.getTag() != null) {
-                    Control ctrl = (Control) v.getTag();
-                    AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId(),ctrl.isToAdvertise());
-                    notifyDataSetChanged();
-                } else {
-                    //More
-                    View parent = (View) v.getParent().getParent();
-                    thisControls = (GridLayout) parent.findViewById(R.id.controls);
-                    expand(context,thisControls);
-                }
-
-            }
-        });
-
-        secondActionBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //do something
-                //CharSequence text = "Second " + getItem(position).getName();
-                if (v.getTag() != null) {
-                    Control ctrl = (Control) v.getTag();
-                    String ret= ctrl.execute(context);
-                    Log.d(this.getClass().getName(),ret);
-                    //notifyDataSetChanged();
-                } else {
-                    //More
-                    expand(context,thisControls);
-                }
-            }
-        });
 
         return view;
     }
@@ -139,12 +141,16 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             setControlColor(icon, AutomationGatewayApi.getInstance(context).getAutomation().getCategories().get("light").getForColor());
             //setControlColor(icon, ContextCompat.getColor(context, R.color.controlColorBackground));
         if (dev.getType().equals("SHUTTER") ) {
-            if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_shutter_up);
-            if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_shutter_down);
+            //if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_shutter_up);
+            //if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_shutter_down);
+            if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
+            if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
         } else
             if (dev.getType().equals("SOCKET") ) {
-                if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_light_on);
-                if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_light_off);
+                //if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_light_on);
+                //if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_light_off);
+                if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
+                if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
             }
             //icon.setImageResource(R.drawable.ic_help_outline_black_24dp);
     }
@@ -171,57 +177,18 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         for (int i = 0; i < dev.getControls().size(); i++) {
             Control ctrl = dev.getControls().get(i);
             if (ctrl.getStyle().equals(Control.STYLE_BUTTON)) {
-                ImageButton button = new ImageButton(context);
-                //button.setBackgroundColor(Color.parseColor("#A4A4A4"));
-                Resources res = context.getResources();
-                if (ctrl.getIcon() != null) {
-                    int resID = res.getIdentifier(ctrl.getIcon(), "drawable", context.getPackageName());
-                    button.setImageResource(resID);
+                ArrayList<View> views = ctrl.getViews(context,col);
+                for (int j=0; j<views.size(); j++) {
+                    v.addView(views.get(j));
+                    col++;
                 }
-                button.setBackground(context.getDrawable(R.drawable.circle));
-                setControlColor(button, "#A4A4A4");
-
-
-                GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-                GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-                lp.setGravity(Gravity.CENTER_HORIZONTAL);
-                lp.setMargins(0, 20, 0, 20);
-                lp.columnSpec = spec;
-                v.addView(button, lp);
-                col++;
             }
             if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) {
-
-                ImageButton button = new ImageButton(context);
-                //button.setBackgroundColor(Color.parseColor("#A4A4A4"));
-                Resources res = context.getResources();
-                if (ctrl.getIcon() != null) {
-                    int resID = res.getIdentifier(ctrl.getIcon(), "drawable", context.getPackageName());
-                    button.setImageResource(resID);
+                ArrayList<View> views = ctrl.getViews(context,col);
+                for (int j=0; j<views.size(); j++) {
+                    v.addView(views.get(j));
                 }
-                button.setBackground(context.getDrawable(R.drawable.circle));
-                setControlColor(button, "#A4A4A4");
 
-
-                GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-                GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-                lp.setGravity(Gravity.CENTER_HORIZONTAL);
-                lp.setMargins(0, 20, 0, 20);
-                lp.columnSpec = spec;
-                v.addView(button, lp);
-                col++;
-
-                SeekBar sb = new SeekBar(context);
-                sb.setMax(ctrl.getMaxValue());
-                sb.setBottom(0);
-                //GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1.0f);
-                GridLayout.LayoutParams lp2 = new GridLayout.LayoutParams();
-                lp2.columnSpec = GridLayout.spec(0, 5-col%5);
-                //lp2.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-                //lp2.setMargins(0, 20, 0, 20);
-                //lp2.setGravity(Gravity.FILL_HORIZONTAL);
-                v.addView(sb,lp2);
-                col++;
             }
 
             if (ctrl.isForceReturnLineAfter()) {
@@ -231,24 +198,16 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     Log.d(this.getClass().getName(),"Force ReturnLineAfter");
                     Space sp = new Space(context);
                     v.addView(sp);
-                    /*
-                    TextView tx = new TextView(context);
-                    tx.setText("t");
-                    v.addView(tx);
-                    */
-                    col++;
-
                 }
+                col=0;
             }
-
-            //  GridLayout.spec(columnNumber,columnSpan);
 
         }
 
 
     }
 
-    public void expand(Context context, View v) {
+    private void expand(Context context, View v) {
         if(v.isShown()){
             FX.slide_up(context, v);
             v.setVisibility(View.GONE);
@@ -270,6 +229,5 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         GradientDrawable bgShape = (GradientDrawable) icon.getBackground();
         bgShape.setColor(color);
     }
-
 
 }
