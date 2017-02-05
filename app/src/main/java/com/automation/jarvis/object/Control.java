@@ -10,6 +10,7 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.automation.jarvis.R;
 import com.automation.jarvis.back.AutomationGatewayApi;
@@ -32,8 +33,7 @@ public class Control {
     private String DEFAULT_ICON_UP = "ic_arrow_upward_black_24dp";
     private String DEFAULT_ICON_DOWN = "ic_arrow_downward_black_24dp";
     private static String DEFAULT_STYLE = STYLE_BUTTON;
-
-    public static int ID = 1;
+    private static String NO_TYPE = "UNKNOWN";
 
     public boolean isToAdvertise() {
         return toAdvertise;
@@ -43,15 +43,35 @@ public class Control {
         this.toAdvertise = toAdvertise;
     }
 
+    private String type=NO_TYPE;
     private boolean mini;
     private String style;
     private String icon = null;
     private String id;
     private int minValue;
+    private int value;
     private int maxValue;
     private int step=1;
-    private String defaultValue;
+    private int defaultValue;
     private boolean onDashboard;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getValue() {
+        return value;
+
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     private String name;
     private boolean toAdvertise = true;
     private boolean forceReturnLineAfter = false;
@@ -172,61 +192,129 @@ public class Control {
         }
     }
 
-    public String getDefaultValue() {
+    public int getDefaultValue() {
         return defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(String dv) {
+        try {
+            this.defaultValue = Integer.parseInt(dv);
+        } catch (NumberFormatException nfe) {
+            this.defaultValue = 0;
+        }
+
         this.defaultValue = defaultValue;
     }
 
     public String toString() {
-        String str = "Control[id="+id+",name="+name+",icon="+icon+",style="+style+",maxvalue="+maxValue+",minvalue="+minValue+",forceReturnLineAfter="+forceReturnLineAfter+"]";
+        String str = "Control[id="+id+",name="+name+",icon="+icon+",style="+style+",maxvalue="+maxValue+",minvalue="+minValue+",step="+step+",forceReturnLineAfter="+forceReturnLineAfter+"]";
         return str;
     }
 
     public String execute(Context context) {
-        return AutomationGatewayApi.getInstance(context).sendCmd(this.getId(), toAdvertise);
+        return AutomationGatewayApi.getInstance(context).sendCmd(this);
     }
 
-    public ArrayList<View> getViews(Context context, int col) {
+    public ArrayList<View> getViews(final Context context) {
         ArrayList<View> views = new ArrayList<View>();
-        ImageButton button = new ImageButton(context);
+        ImageButton button;
 
-        if (this.getStyle().equals(Control.STYLE_BUTTON) || this.getStyle().equals(Control.STYLE_SLIDER)) {
+        // Separator
+        if (this.isSeparator()) {
+            TextView text = new TextView(context);
+            text.setText(this.getName());
+            GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 3f);
+            GridLayout.LayoutParams tlp = new GridLayout.LayoutParams();
+            tlp.setGravity(Gravity.LEFT);
+            tlp.columnSpec = spec;
+            text.setLayoutParams(tlp);
+            views.add(text);
+
             button = new ImageButton(context);
-            Resources res = context.getResources();
-            if (this.getIcon() != null) {
-                int resID = res.getIdentifier(this.getIcon(), "drawable", context.getPackageName());
-                button.setColorFilter(Color.WHITE);
-                button.setImageResource(resID);
-            }
-            button.setBackground(context.getDrawable(R.drawable.circle));
-            setControlColor(button, "#A4A4A4");
-
-
-            GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
             lp.setGravity(Gravity.CENTER_HORIZONTAL);
             lp.setMargins(0, 20, 0, 20);
             lp.columnSpec = spec;
             button.setLayoutParams(lp);
+            button.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+            button.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    //expand
+                }
+            });
+            views.add(button);
+
+        }
+
+
+        if (this.getStyle().equals(Control.STYLE_BUTTON)) {
+            button = (ImageButton) addButton(context);
             views.add(button);
         }
 
         if (this.getStyle().equals(Control.STYLE_SLIDER)) {
             SeekBar sb = new SeekBar(context);
-            sb.setMax(this.getMaxValue());
+            sb.setMax(this.getMaxValue()/this.getStep());
             sb.setBottom(0);
+            sb.setProgress(this.getDefaultValue()/this.getStep());
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
             lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 4);
             lp.setGravity(Gravity.FILL_HORIZONTAL | Gravity.CENTER);
             sb.setLayoutParams(lp);
-            views.add(sb);
 
+            button = (ImageButton) addButton(context);
+            button.setTag(this);
+            views.add(button);
+            sb.setTag(this);
+            sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    Control ctrl = (Control) seekBar.getTag();
+                    ctrl.setValue(progress*ctrl.getStep());
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            views.add(sb);
         }
 
         return views;
+    }
+
+    private View addButton(Context context) {
+
+        final Context ctx = context;
+        ImageButton button = new ImageButton(context);
+
+
+        GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+        lp.setGravity(Gravity.CENTER_HORIZONTAL);
+        lp.setMargins(0, 20, 0, 20);
+        lp.columnSpec = spec;
+        button.setTag(this);
+        button.setLayoutParams(lp);
+        setIconOnView(context,button);
+
+        button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Control ctrl = (Control) v.getTag();
+                AutomationGatewayApi.getInstance(ctx).sendCmd(ctrl);
+            }
+        });
+
+        return button;
     }
 
     private void setControlColor(ImageView icon, String color) {
@@ -238,6 +326,27 @@ public class Control {
         //ShapeDrawable shape = (ShapeDrawable) icon.getBackground();
         GradientDrawable bgShape = (GradientDrawable) icon.getBackground();
         bgShape.setColor(color);
+    }
+
+    public void setIconOnView(Context context, ImageButton action) {
+        Resources res = context.getResources();
+
+        int resID = 0;
+        if (this.getIcon() != null) {
+            resID = res.getIdentifier(this.getIcon(),"drawable",context.getPackageName());
+        }
+        if (resID != 0) {
+            action.setImageResource(resID);
+        } else {
+            action.setImageResource(R.drawable.ic_help_outline_black_24dp);
+        }
+        //action.setBackground(context.getDrawable(R.drawable.control_circle));
+        action.setColorFilter(Color.WHITE);
+        action.setTag(this);
+    }
+
+    public boolean isSeparator() {
+        return getType().equals("separator");
     }
 
 

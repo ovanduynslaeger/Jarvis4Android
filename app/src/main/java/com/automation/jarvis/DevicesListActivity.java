@@ -23,34 +23,34 @@ public class DevicesListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         ArrayList<Device> devices = new ArrayList<Device>();
+        String color = null;
 
         super.onCreate(savedInstanceState);
-        setupActionBar();
+        //setupActionBar();
 
         id = this.getIntent().getIntExtra("by",new Integer(-1));
+        String value = this.getIntent().getStringExtra("id");
 
         //Show by categorie
         if (id == R.id.nav_category) {
-            String value = this.getIntent().getStringExtra("value");
+            setTitle(R.string.menu_category);
             Category cat = AutomationGatewayApi.getInstance(this).getAutomation().getCategories().get(value);
             devices = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByCategory(cat);
+            color = cat.getForColor();
+
         }
         //Show by location
         if (id == R.id.nav_location) {
-            int value = this.getIntent().getIntExtra("value",new Integer(-1));
+            setTitle(R.string.menu_location);
             Location loc = AutomationGatewayApi.getInstance(this).getAutomation().getLocations().get(value);
-            //devices = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByLocation(loc);
+            devices = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByLocation(loc);
+            color = loc.getForColor();
         }
 
         // use your custom layout
-        DevicesListAdapter adapter = new DevicesListAdapter(devices, this);
+        DevicesListAdapter adapter = new DevicesListAdapter(devices, this, color);
         setListAdapter(adapter);
 
     }
-
-    private void setupActionBar() {
-       //this.getActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
 
 }

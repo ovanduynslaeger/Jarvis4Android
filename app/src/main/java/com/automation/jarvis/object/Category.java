@@ -9,8 +9,21 @@ public class Category {
     private String name;
     private String forColor;
     private boolean visible=false;
+    private int nbDevice=0;
 
     // Jeedom ID Category
+
+    public void addDevice() {
+        nbDevice++;
+    }
+    public int getNbDevice() {
+        return nbDevice;
+    }
+
+    public void setNbDevice(int nbDevice) {
+        this.nbDevice = nbDevice;
+    }
+
     // "heating","security","energy","light","automatism","multimedia","default"
     private String id;
 

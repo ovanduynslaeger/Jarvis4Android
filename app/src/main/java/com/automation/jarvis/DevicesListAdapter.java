@@ -1,10 +1,9 @@
 package com.automation.jarvis;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
@@ -33,10 +33,12 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
     private ArrayList<Device> list = new ArrayList<Device>();
     private Context context;
     private View thisControls;
+    private String color;
 
-    public DevicesListAdapter(ArrayList<Device> list, Context context) {
+    public DevicesListAdapter(ArrayList<Device> list, Context context, String color) {
         this.list = list;
         this.context = context;
+        this.color=color;
     }
 
     @Override
@@ -64,8 +66,25 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             view = inflater.inflate(R.layout.activity_devices_list, null);
 
             //Handle TextView and display string from your list
+            RelativeLayout rl = (RelativeLayout) view.findViewById(R.id.device_head);
+            rl.setBackgroundColor(Color.parseColor(color));
             TextView listItemText = (TextView)view.findViewById(R.id.device_name);
-            listItemText.setText(list.get(position).getName());
+            String more="";
+            if (list.get(position).hasMoreControls()) {
+                more="...";
+                listItemText.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        //More
+                        View parent = (View) v.getParent().getParent();
+                        thisControls = (GridLayout) parent.findViewById(controls);
+                        expand(context,thisControls);
+                    }
+                });
+            }
+            listItemText.setText(list.get(position).getName()+more);
+
+
 
             //Handle buttons and add onClickListeners
             ImageButton firstActionBtn = (ImageButton) view.findViewById(R.id.first_action);
@@ -81,7 +100,7 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     //list.remove(position); //or some other task
                     if (v.getTag() != null) {
                         Control ctrl = (Control) v.getTag();
-                        AutomationGatewayApi.getInstance(context).sendCmd(ctrl.getId(),ctrl.isToAdvertise());
+                        AutomationGatewayApi.getInstance(context).sendCmd(ctrl);
                         notifyDataSetChanged();
                     } else {
                         //More
@@ -100,6 +119,7 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     //CharSequence text = "Second " + getItem(position).getName();
                     if (v.getTag() != null) {
                         Control ctrl = (Control) v.getTag();
+
                         String ret= ctrl.execute(context);
                         Log.d(this.getClass().getName(),ret);
                         //notifyDataSetChanged();
@@ -122,53 +142,29 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             Log.d(this.getClass().getName(),"Device "+dev.getName()+" is shutter");
             // @TODO: To move to control class
             if (dev.hasMoreControls()) {
-                Log.d(this.getClass().getName(),"Device "+dev.getName()+" has more controls");
-                first.setImageResource(R.drawable.ic_more_horiz_black_24dp);
-                first.setTag(null);
-                second.setVisibility(View.INVISIBLE);
+                Control ctrlOn = dev.getControl("on");
+                if (ctrlOn!=null) ctrlOn.setIconOnView(context,first);
+                else  dev.getControls().get(0).setIconOnView(context, first);
+                Control ctrlOff = dev.getControl("off");
+                if (ctrlOff!=null) ctrlOff.setIconOnView(context, second);
+                else  dev.getControls().get(1).setIconOnView(context, second);
                 showControls((GridLayout) controls,context,dev);
             } else {
                 Log.d(this.getClass().getName(),"Device "+dev.getName()+" has 2 controls");
                 second.setVisibility(View.VISIBLE);
                 if (dev.getControls().size()>=1) {
-                    showControl(dev.getControls().get(0), 0, first);
+                    dev.getControls().get(0).setIconOnView(context, first);
                 }
                 if (dev.getControls().size()>=2) {
-                    showControl(dev.getControls().get(1), 1, second);
+                    dev.getControls().get(1).setIconOnView(context, second);
                 }
             }
 
-            setControlColor(icon, AutomationGatewayApi.getInstance(context).getAutomation().getCategories().get("light").getForColor());
-            //setControlColor(icon, ContextCompat.getColor(context, R.color.controlColorBackground));
-        if (dev.getType().equals("SHUTTER") ) {
-            //if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_shutter_up);
-            //if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_shutter_down);
-            if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
-            if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
-        } else
-            if (dev.getType().equals("SOCKET") ) {
-                //if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_light_on);
-                //if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_light_off);
-                if (dev.getState().equals("1")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
-                if (dev.getState().equals("0")) icon.setImageResource(R.drawable.ic_lightbulb_outline_black_24dp);
-            }
-            //icon.setImageResource(R.drawable.ic_help_outline_black_24dp);
-    }
-
-    public void showControl(Control ctrl, int pos, ImageButton action) {
-        Resources res = context.getResources();
-        Log.d(this.getClass().getName(),"Icon is "+ctrl.getIcon());
-
         int resID = 0;
-        if (ctrl.getIcon() != null) {
-            resID = res.getIdentifier(ctrl.getIcon(),"drawable",context.getPackageName());
-            action.setTag(ctrl);
-        }
-        if (resID != 0) {
-            action.setImageResource(resID);
-        } else {
-            action.setImageResource(R.drawable.ic_help_outline_black_24dp);
-        }
+        if (dev.getIcon() != null)
+            resID = context.getResources().getIdentifier(dev.getIcon(),"drawable",context.getPackageName());
+        if (resID != 0) icon.setImageResource(resID);
+        icon.setColorFilter(Color.WHITE);
     }
 
     public void showControls(GridLayout v, Context context, Device dev) {
@@ -176,34 +172,31 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         int col=0;
         for (int i = 0; i < dev.getControls().size(); i++) {
             Control ctrl = dev.getControls().get(i);
-            if (ctrl.getStyle().equals(Control.STYLE_BUTTON)) {
-                ArrayList<View> views = ctrl.getViews(context,col);
-                for (int j=0; j<views.size(); j++) {
-                    v.addView(views.get(j));
-                    col++;
-                }
+            ArrayList<View> views = ctrl.getViews(context);
+            for (int j=0; j<views.size(); j++) {
+                v.addView(views.get(j));
+                col++;
             }
-            if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) {
-                ArrayList<View> views = ctrl.getViews(context,col);
-                for (int j=0; j<views.size(); j++) {
-                    v.addView(views.get(j));
-                }
-
-            }
+            if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) col=0;
 
             if (ctrl.isForceReturnLineAfter()) {
                 int gap = 5-col%5;
-                Log.d(this.getClass().getName(),"Gap = "+gap);
                 for (int j=0;j<gap;j++) {
-                    Log.d(this.getClass().getName(),"Force ReturnLineAfter");
                     Space sp = new Space(context);
+                    GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                    GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+                    lp.width  = GridLayout.LayoutParams.WRAP_CONTENT;
+                    lp.height= GridLayout.LayoutParams.WRAP_CONTENT;
+                    lp.setGravity(Gravity.CENTER_HORIZONTAL);
+                    lp.columnSpec = spec;
+                    sp.setLayoutParams(lp);
                     v.addView(sp);
+
                 }
                 col=0;
             }
 
         }
-
 
     }
 
@@ -218,16 +211,4 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         }
 
     }
-
-    public void setControlColor(ImageView icon, String color) {
-        int c = Color.parseColor(color);
-        setControlColor(icon,c);
-    }
-
-    public void setControlColor(ImageView icon, int color) {
-        //ShapeDrawable shape = (ShapeDrawable) icon.getBackground();
-        GradientDrawable bgShape = (GradientDrawable) icon.getBackground();
-        bgShape.setColor(color);
-    }
-
 }

@@ -59,32 +59,34 @@ public class AutomationGatewayApi {
 
 
 
-    public String sendCmd(String cmdId, boolean toAdvertise) {
-        String url = getUrl(JEEDOM_API_CMDREQUESTPATTERN,cmdId);
+    public String sendCmd(Control ctrl) {
+        String url="";
+        if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) {
+            url = getUrl(JEEDOM_API_SLICERREQUESTPATTERN,ctrl.getId(),ctrl.getValue());
+        } else {
+            url = getUrl(JEEDOM_API_CMDREQUESTPATTERN,ctrl.getId());
+        }
         Log.d(this.getClass().getName(),url);
         String ret = gatewayRequestCmd(url);
-        if (toAdvertise) {
-            Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_LONG );
+        if (ctrl.isToAdvertise()) {
+            Toast toast = Toast.makeText(mCtx, ctrl.getName() + "/" + ctrl.getValue(), Toast.LENGTH_LONG );
             toast.show();
         }
         return ret;
     }
 
-    public void sendSlicerCmd(String cmdId) {
-        String url = getUrl(JEEDOM_API_SLICERREQUESTPATTERN,cmdId);
-        Toast toast = Toast.makeText(mCtx, url, Toast.LENGTH_SHORT );
-        toast.show();
+    private String getUrl(String pattern) {
+        return JEEDOM_API_PREFIX + pattern.replace("@APIKEY",JEEDOM_API_KEY);
     }
 
-    private String getUrl(String pattern) {
-        String url = JEEDOM_API_PREFIX + pattern.replace("@APIKEY",JEEDOM_API_KEY);
+    private String getUrl(String pattern, String cmdId, int slideValue) {
+        String url = getUrl(pattern,cmdId);
+        url = url.replace("@SLIDER",Integer.toString(slideValue));
         return url;
     }
-
     private String getUrl(String pattern, String cmdId) {
         String url = JEEDOM_API_PREFIX + pattern.replace("@ID",cmdId);
         url = url.replace("@APIKEY",JEEDOM_API_KEY);
-        url = url.replace("@SLIDER",JEEDOM_API_KEY);
         return url;
     }
 
@@ -691,17 +693,19 @@ public class AutomationGatewayApi {
                     String id = location.getString("id");
                     String name = location.getString("name");
                     Location l = new Location(id,name);
-                    mAuto.getLocations().add(l);
-                    setDevices(location);
+                    Log.v(TAG, "Location = " + l);
+                    mAuto.getLocations().put(id,l);
+                    setDevices(location,l);
 
                 }
             }
         } catch (final JSONException e) {
             Log.e(TAG, "Json parsing error: " + e.getMessage());
         }
+
     }
 
-    private void setDevices(JSONObject location) {
+    private void setDevices(JSONObject location, Location loc) {
         try {
             JSONArray devicesJsonStr = location.getJSONArray("eqLogics");
 
@@ -718,6 +722,9 @@ public class AutomationGatewayApi {
                 Device dev = addDevice(deviceJsonStr);
 
                 if (dev!=null) {
+                    dev.setLocation(loc);
+                    loc.addDevice();
+                    loc.setVisible(true);
                     while (keys.hasNext()) {
                         String currentDynamicKey = (String) keys.next();
                         Log.v(TAG, "Key = " + currentDynamicKey);
@@ -731,6 +738,7 @@ public class AutomationGatewayApi {
                             //Activate category
                             Log.v(TAG, "Activate category :" + currentDynamicKey);
                             mAuto.getCategories().get(currentDynamicKey).setVisible(true);
+                            mAuto.getCategories().get(currentDynamicKey).addDevice();
                             dev.addCategory(currentDynamicKey);
                         }
                         Log.v(TAG, "Device found :" + deviceJsonStr.getString("name"));
@@ -754,10 +762,19 @@ public class AutomationGatewayApi {
         Device device = null;
         String categorie=null;
         try {
-            if (deviceJsonStr.has("display") && deviceJsonStr.getJSONObject("display").has("parameters") && deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("categorie") ) {
+            if (deviceJsonStr.has("display") && deviceJsonStr.getJSONObject("display").has("parameters") && deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("categorie")) {
                 categorie = deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("categorie");
             }
             device = new Device(deviceJsonStr.getString("id"),deviceJsonStr.getString("name"),categorie);
+
+            if (deviceJsonStr.has("display") && deviceJsonStr.getJSONObject("display").has("parameters")) {
+                if (deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon.off") )
+                    device.setIconOff(deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon.off"));
+                if (deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon.on") )
+                    device.setIconOn(deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon.on"));
+            }
+
+
             JSONArray ctrls = deviceJsonStr.getJSONArray("cmds");
 
             //Iterate on device
@@ -767,9 +784,15 @@ public class AutomationGatewayApi {
                 Log.v(TAG,"Control found = " + cmd.getString("name") + "/"+cmd.getString("isVisible")+"/"+cmd.getString("type"));
                 //is Visible
                 //info
-                if (cmd.getString("type").equals("info")) {
+                if (cmd.getString("isVisible").equals("1") && cmd.getString("type").equals("info")) {
                     Info info = new Info(cmd.getString("id"),cmd.getString("name"));
                     info.setValue(cmd.getString("state"));
+                    if (cmd.has("display") && cmd.getJSONObject("display").has("parameters")) {
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.favorite.order"))
+                            info.setFavoriteOrder(cmd.getJSONObject("display").getJSONObject("parameters").getInt("jarvis4mobile.favorite.order"));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.type"))
+                            info.setType(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.type"));
+                    }
                     Log.v(TAG,"Add info " + cmd.getString("name"));
                     device.getInfos().add(info);
                 }
@@ -786,8 +809,12 @@ public class AutomationGatewayApi {
                            ctrl.setStyle(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.style"));
                         if (cmd.getJSONObject("display").getJSONObject("parameters").has("ondashboard"))
                             ctrl.setOnDashboard(new Boolean(cmd.getJSONObject("display").getJSONObject("parameters").getString("ondashboard")));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("defaultValue"))
+                            ctrl.setDefaultValue(cmd.getJSONObject("display").getJSONObject("parameters").getString("defaultValue"));
                         if (cmd.getJSONObject("display").getJSONObject("parameters").has("step"))
                             ctrl.setStep(cmd.getJSONObject("display").getJSONObject("parameters").getString("step"));
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.type"))
+                            ctrl.setType(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.type"));
                     }
                     if (cmd.has("configuration")) {
                         if (cmd.getJSONObject("configuration").has("maxValue"))
@@ -810,8 +837,8 @@ public class AutomationGatewayApi {
 
     private void initCategories() {
         String[] jeedomCat = { "heating","security","energy","light","automatism","multimedia","default"};
-        String[] libCat = { "Chauffage","Securité","Energie","Lumière","Automatisme","Media","Defaut"};
-        String[] foreColor= { "#2196f3","#2196f3","#2196f3","#DF0101","#088A85","#2196f3","#2196f3"};
+        String[] libCat = { "Audio","Securité","Energie","Lumière","Automatisme","Media","Defaut"};
+        String[] foreColor= { "#7401DF","#2196f3","#2196f3","#DF0101","#088A85","#fe9c17","#2196f3"};
 
         for (int i = 0; i < jeedomCat.length;  i++) {
             mAuto.getCategories().put(jeedomCat[i], new Category(jeedomCat[i], libCat[i],foreColor[i]));

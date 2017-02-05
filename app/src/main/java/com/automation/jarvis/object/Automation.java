@@ -13,9 +13,18 @@ import java.util.Iterator;
 
 public class Automation {
 
-    private ArrayList<Location> locations = new ArrayList<Location>();
+
+    private HashMap<String,Location> locations = new HashMap<String,Location>();
     private HashMap<String,Category> categories = new HashMap<String,Category>();
     private ArrayList<Device> devices = new ArrayList<Device>();
+
+    public HashMap<String, Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(HashMap<String, Location> locations) {
+        this.locations = locations;
+    }
 
     public  ArrayList<Device> getDevices() {
         return devices;
@@ -26,47 +35,12 @@ public class Automation {
 
     }
 
-    public  void setLocations(ArrayList<Location> locations) {
-        this.locations = locations;
-    }
-
     public  void setCategories(HashMap<String, Category> categories) {
         this.categories = categories;
     }
 
     public  void setDevices(ArrayList<Device> devices) {
         this.devices = devices;
-    }
-
-    public ArrayList<Location> getLocations() {
-        return this.locations;
-    }
-
-    public String[] getCategoriesName() {
-        ArrayList<String> cats = new ArrayList<String>();
-        Iterator itr = categories.keySet().iterator();
-
-        while (itr.hasNext()) {
-            String key= (String) itr.next();
-            if (categories.get(key).isVisible()) {
-               cats.add(((Category) categories.get(key)).getName());
-           }
-        }
-        String[] values = new String[cats.size()];
-        cats.toArray(values);
-        return values;
-    }
-
-    public String[] getLocationsName() {
-        String[] values = new String[locations.size()];
-        int i=0;
-        Iterator itr = locations.iterator();
-
-        while (itr.hasNext()) {
-            Location loc= (Location) itr.next();
-            values[i++] = loc.getName();
-        }
-        return values;
     }
 
     public ArrayList<Device> getDevicesByCategory(Category cat) {
@@ -85,17 +59,44 @@ public class Automation {
         return filter;
     }
 
+    public ArrayList<Device> getDevicesByLocation(Location loc) {
+        ArrayList<Device> filter = new ArrayList<Device>();
+        Iterator itr = devices.iterator();
+
+        Log.d("getDevicesByLocation",loc.toString());
+
+        while (itr.hasNext()) {
+            Device dev= (Device) itr.next();
+            if (dev.getLocation().getId().equals(loc.getId())) {
+                filter.add(dev);
+            }
+        }
+        return filter;
+    }
+
     public ArrayList<Category> getCategoriesList() {
         ArrayList<Category> cats = new ArrayList<Category>();
         Iterator itr = categories.keySet().iterator();
 
         while (itr.hasNext()) {
             String key= (String) itr.next();
-            cats.add(categories.get(key));
+            if (categories.get(key).isVisible())
+              cats.add(categories.get(key));
         }
         return cats;
     }
 
+    public ArrayList<Location> getLocationsList() {
+        ArrayList<Location> locs = new ArrayList<Location>();
+        Iterator itr = locations.keySet().iterator();
+
+        while (itr.hasNext()) {
+            String key= (String) itr.next();
+            if (locations.get(key).isVisible())
+                locs.add(locations.get(key));
+        }
+        return locs;
+    }
 
 
 
