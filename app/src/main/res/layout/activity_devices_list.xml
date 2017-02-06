@@ -36,6 +36,8 @@
             android:textColor="@color/colorAppMenu"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/icon"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
             android:layout_marginStart="11dp" />
         <!--        android:textStyle="bold" -->
 

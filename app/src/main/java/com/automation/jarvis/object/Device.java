@@ -29,6 +29,16 @@ public class Device {
     public String iconOff;
     public Location location;
 
+    public boolean isMediacenterNavigation() {
+        return mediacenterNavigation;
+    }
+
+    public void setMediacenterNavigation(boolean mediacenterNavigation) {
+        this.mediacenterNavigation = mediacenterNavigation;
+    }
+
+    public boolean mediacenterNavigation;
+
     public Location getLocation() {
         return location;
     }
@@ -146,7 +156,6 @@ public class Device {
         if (found) return this.getControls().get(i);
         else return null;
     }
-
 
 }
 

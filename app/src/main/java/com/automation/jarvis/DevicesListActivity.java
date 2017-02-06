@@ -33,7 +33,6 @@ public class DevicesListActivity extends ListActivity {
 
         //Show by categorie
         if (id == R.id.nav_category) {
-            setTitle(R.string.menu_category);
             Category cat = AutomationGatewayApi.getInstance(this).getAutomation().getCategories().get(value);
             devices = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByCategory(cat);
             color = cat.getForColor();
@@ -41,7 +40,6 @@ public class DevicesListActivity extends ListActivity {
         }
         //Show by location
         if (id == R.id.nav_location) {
-            setTitle(R.string.menu_location);
             Location loc = AutomationGatewayApi.getInstance(this).getAutomation().getLocations().get(value);
             devices = AutomationGatewayApi.getInstance(this).getAutomation().getDevicesByLocation(loc);
             color = loc.getForColor();

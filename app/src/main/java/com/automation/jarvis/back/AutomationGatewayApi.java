@@ -772,6 +772,8 @@ public class AutomationGatewayApi {
                     device.setIconOff(deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon.off"));
                 if (deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon.on") )
                     device.setIconOn(deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon.on"));
+                if (deviceJsonStr.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.mediacenter.nav") )
+                    device.setMediacenterNavigation(deviceJsonStr.getJSONObject("display").getJSONObject("parameters").getBoolean("jarvis4mobile.mediacenter.nav"));
             }
 
 

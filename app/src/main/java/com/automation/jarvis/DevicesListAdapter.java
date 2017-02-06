@@ -142,13 +142,18 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             Log.d(this.getClass().getName(),"Device "+dev.getName()+" is shutter");
             // @TODO: To move to control class
             if (dev.hasMoreControls()) {
-                Control ctrlOn = dev.getControl("on");
-                if (ctrlOn!=null) ctrlOn.setIconOnView(context,first);
-                else  dev.getControls().get(0).setIconOnView(context, first);
-                Control ctrlOff = dev.getControl("off");
-                if (ctrlOff!=null) ctrlOff.setIconOnView(context, second);
-                else  dev.getControls().get(1).setIconOnView(context, second);
-                showControls((GridLayout) controls,context,dev);
+
+                if (dev.isMediacenterNavigation()) {
+
+                } else {
+                    Control ctrlOn = dev.getControl("on");
+                    if (ctrlOn != null) ctrlOn.setIconOnView(context, first);
+                    else dev.getControls().get(0).setIconOnView(context, first);
+                    Control ctrlOff = dev.getControl("off");
+                    if (ctrlOff != null) ctrlOff.setIconOnView(context, second);
+                    else dev.getControls().get(1).setIconOnView(context, second);
+                    showControls((GridLayout) controls, context, dev);
+                }
             } else {
                 Log.d(this.getClass().getName(),"Device "+dev.getName()+" has 2 controls");
                 second.setVisibility(View.VISIBLE);

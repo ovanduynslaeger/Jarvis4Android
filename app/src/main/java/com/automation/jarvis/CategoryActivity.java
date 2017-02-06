@@ -36,11 +36,13 @@ public class CategoryActivity extends AppCompatActivity {
             catValues = AutomationGatewayApi.getInstance(this).getAutomation().getCategoriesList();
             CategoryListAdapter adapter = new CategoryListAdapter(this,catValues);
             listView.setAdapter(adapter);
+            this.setTitle(R.string.menu_category);
         }
         if (idBy == R.id.nav_location) {
             locValues = AutomationGatewayApi.getInstance(this).getAutomation().getLocationsList();
             LocationListAdapter adapter = new LocationListAdapter(this,locValues);
             listView.setAdapter(adapter);
+            this.setTitle(R.string.menu_location);
         }
 
 
@@ -68,8 +70,8 @@ public class CategoryActivity extends AppCompatActivity {
                     Location location = locValues.get(position);
                     i.putExtra("id",location.getId());
                 }
-
                 startActivity(i);
+                finish();
             }
         });
     }
