@@ -1,6 +1,7 @@
 package com.automation.jarvis;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.automation.jarvis.back.AutomationGatewayApi;
 import com.automation.jarvis.object.Control;
 import com.automation.jarvis.object.Device;
+import com.automation.jarvis.object.MediacenterNavigation;
 import com.automation.jarvis.util.FX;
 
 import java.util.ArrayList;
@@ -100,13 +102,14 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     //list.remove(position); //or some other task
                     if (v.getTag() != null) {
                         Control ctrl = (Control) v.getTag();
-                        AutomationGatewayApi.getInstance(context).sendCmd(ctrl);
-                        notifyDataSetChanged();
-                    } else {
-                        //More
-                        View parent = (View) v.getParent().getParent();
-                        thisControls = (GridLayout) parent.findViewById(controls);
-                        expand(context,thisControls);
+
+                        if (ctrl.getName().equals(MediacenterNavigation.NAVIGATION)) {
+                            Intent i = new Intent(context, MediacenterNavigationActivity.class);
+                            context.startActivity(i);
+                        } else {
+                            AutomationGatewayApi.getInstance(context).sendCmd(ctrl);
+                            notifyDataSetChanged();
+                        }
                     }
 
                 }
@@ -115,17 +118,11 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             secondActionBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    //do something
-                    //CharSequence text = "Second " + getItem(position).getName();
                     if (v.getTag() != null) {
                         Control ctrl = (Control) v.getTag();
-
                         String ret= ctrl.execute(context);
                         Log.d(this.getClass().getName(),ret);
                         //notifyDataSetChanged();
-                    } else {
-                        //More
-                        expand(context,thisControls);
                     }
                 }
             });
@@ -144,7 +141,9 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             if (dev.hasMoreControls()) {
 
                 if (dev.isMediacenterNavigation()) {
-
+                    Control ctrl = MediacenterNavigation.getInstance().getMenuControl();
+                    ctrl.setIconOnView(context,first);
+                    second.setVisibility(View.INVISIBLE);
                 } else {
                     Control ctrlOn = dev.getControl("on");
                     if (ctrlOn != null) ctrlOn.setIconOnView(context, first);
@@ -152,8 +151,8 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     Control ctrlOff = dev.getControl("off");
                     if (ctrlOff != null) ctrlOff.setIconOnView(context, second);
                     else dev.getControls().get(1).setIconOnView(context, second);
-                    showControls((GridLayout) controls, context, dev);
                 }
+                showControls((GridLayout) controls, context, dev);
             } else {
                 Log.d(this.getClass().getName(),"Device "+dev.getName()+" has 2 controls");
                 second.setVisibility(View.VISIBLE);

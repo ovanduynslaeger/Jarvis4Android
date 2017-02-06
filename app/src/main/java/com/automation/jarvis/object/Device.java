@@ -13,6 +13,9 @@ public class Device {
     private String DEFAULT_TYPE = "UNKNOWN";
     private String DEFAULT_ICON_SHUTTER_UP = "ic_shutter_up";
     private String DEFAULT_ICON_SHUTTER_DOWN = "ic_shutter_down";
+    private String DEFAULT_ICON_LIGHT_ON = "ic_lightbulb_outline_black_24dp";
+    private String DEFAULT_ICON_LIGHT_OFF = "ic_lightbulb_outline_black_24dp";
+
 
     private String STATE_ON = "1";
     private String STATE_OFF = "0";
@@ -105,11 +108,15 @@ public class Device {
         String icon="";
         if (getState().equals(STATE_ON))
             if (iconOn == null && this.getType().equals("SHUTTER"))
-                iconOn = "ic_shutter_up";
+                iconOn = DEFAULT_ICON_SHUTTER_UP;
+            if (iconOn == null && this.getType().equals("SOCKET"))
+                iconOn = DEFAULT_ICON_LIGHT_ON;
             icon=iconOn;
         if (getState().equals(STATE_OFF))
             if (iconOff == null && this.getType().equals("SHUTTER"))
-                iconOff = "ic_shutter_down";
+                iconOff = DEFAULT_ICON_SHUTTER_DOWN;
+            if (iconOff == null && this.getType().equals("SOCKET"))
+                iconOff = DEFAULT_ICON_LIGHT_OFF;
             icon=iconOff;
         return icon;
     }

@@ -2,7 +2,6 @@ package com.automation.jarvis;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +40,6 @@ public class CategoryListAdapter extends ArrayAdapter<Category>  {
 
         ViewHolder v;
         Category p = getItem(position);
-        Log.d(this.getClass().getName(),p.getName());
-
         if (convertView == null) {
 
             v=new ViewHolder();

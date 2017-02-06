@@ -51,10 +51,10 @@
         -->
         <activity android:name=".MediacenterNavigationActivity"
         android:label="Navigation"
-        android:parentActivityName=".HomeActivity">
+        android:parentActivityName=".DevicesListActivity">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.automation.jarvis.HomeActivity" />
+            android:value="com.automation.jarvis.DevicesListActivity" />
     </activity>
     </application>
 
