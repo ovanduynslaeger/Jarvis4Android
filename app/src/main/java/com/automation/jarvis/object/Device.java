@@ -104,6 +104,17 @@ public class Device {
         return state;
     }
 
+    public boolean hasSection() {
+        boolean state = false;
+        for (int i=0; i<controls.size(); i++) {
+
+            if (controls.get(i).isSection() ) {
+                state = true;
+            }
+        }
+        return state;
+    }
+
     public String getIcon() {
         String icon="";
         if (getState().equals(STATE_ON))

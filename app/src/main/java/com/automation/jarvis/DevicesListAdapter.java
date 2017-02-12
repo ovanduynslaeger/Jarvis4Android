@@ -4,17 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
-import android.widget.Space;
 import android.widget.TextView;
 
 import com.automation.jarvis.back.AutomationGatewayApi;
@@ -22,10 +20,10 @@ import com.automation.jarvis.object.Control;
 import com.automation.jarvis.object.Device;
 import com.automation.jarvis.object.MediacenterNavigation;
 import com.automation.jarvis.util.FX;
+import com.automation.jarvis.view.ControlView;
+import com.automation.jarvis.view.SectionView;
 
 import java.util.ArrayList;
-
-import static com.automation.jarvis.R.id.controls;
 
 /**
  * Created by Olivier on 31/12/2016.
@@ -67,6 +65,18 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.activity_devices_list, null);
 
+
+            SectionView sv = new SectionView(context,new Control("monid","Défaut"));
+            Device dev = list.get(position);
+            View myview = view.findViewById(R.id.linearsection);
+            if (!dev.hasSection() || dev.isMediacenterNavigation()) {
+                sv.render((LinearLayout) myview,View.VISIBLE);
+                ViewGroup vg = (ViewGroup) myview.findViewById(R.id.section_header).getParent();
+                vg.removeView(myview.findViewById(R.id.section_header));
+            } else {
+                sv.render((LinearLayout) myview,View.GONE);
+            }
+
             //Handle TextView and display string from your list
             RelativeLayout rl = (RelativeLayout) view.findViewById(R.id.device_head);
             rl.setBackgroundColor(Color.parseColor(color));
@@ -79,8 +89,10 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
                     public void onClick(View v) {
                         //More
                         View parent = (View) v.getParent().getParent();
-                        thisControls = (GridLayout) parent.findViewById(controls);
-                        expand(context,thisControls);
+                        //thisControls = parent.findViewById(R.id.controls);
+                        View section = parent.findViewById(R.id.linearsection);
+
+                        expand(context,section);
                     }
                 });
             }
@@ -92,9 +104,9 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
             ImageButton firstActionBtn = (ImageButton) view.findViewById(R.id.first_action);
             ImageButton secondActionBtn = (ImageButton) view.findViewById(R.id.second_action);
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            thisControls = (GridLayout) view.findViewById(controls);
+//            thisControls = (GridLayout) view.findViewById(controls);
 
-            showDevice(list.get(position),icon,firstActionBtn, secondActionBtn, thisControls);
+            showDevice(myview,dev,icon,firstActionBtn, secondActionBtn, sv);
 
             firstActionBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -134,33 +146,38 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         return view;
     }
 
-    public void showDevice(Device dev, ImageView icon, ImageButton first, ImageButton second,View controls) {
-        Log.d(this.getClass().getName(),"Device type is "+dev.getType());
-            Log.d(this.getClass().getName(),"Device "+dev.getName()+" is shutter");
+    public void showDevice(View parent,Device dev, ImageView icon, ImageButton first, ImageButton second,SectionView section) {
+           Log.d(this.getClass().getName(),"Device is "+dev.getName()+"/"+dev.getType());
             // @TODO: To move to control class
             if (dev.hasMoreControls()) {
 
                 if (dev.isMediacenterNavigation()) {
                     Control ctrl = MediacenterNavigation.getInstance().getMenuControl();
-                    ctrl.setIconOnView(context,first);
+                    ControlView cv = new ControlView(context,ctrl);
+                    cv.setView(first);
                     second.setVisibility(View.INVISIBLE);
                 } else {
-                    Control ctrlOn = dev.getControl("on");
-                    if (ctrlOn != null) ctrlOn.setIconOnView(context, first);
-                    else dev.getControls().get(0).setIconOnView(context, first);
-                    Control ctrlOff = dev.getControl("off");
-                    if (ctrlOff != null) ctrlOff.setIconOnView(context, second);
-                    else dev.getControls().get(1).setIconOnView(context, second);
+                    Control ctrl=dev.getControl("on");
+                    if (ctrl == null) ctrl = dev.getControls().get(0);
+                    ControlView cvOn = new ControlView(context,ctrl);
+                    cvOn.setView(first);
+
+                    ctrl = dev.getControl("off");
+                    if (ctrl == null) ctrl = dev.getControls().get(1);
+                    ControlView cvOff = new ControlView(context,ctrl);
+                    cvOff.setView(second);
                 }
-                showControls((GridLayout) controls, context, dev);
+                showControls(parent,section,  dev);
             } else {
                 Log.d(this.getClass().getName(),"Device "+dev.getName()+" has 2 controls");
                 second.setVisibility(View.VISIBLE);
                 if (dev.getControls().size()>=1) {
-                    dev.getControls().get(0).setIconOnView(context, first);
+                    ControlView cv = new ControlView(context,dev.getControls().get(0));
+                    cv.setView(first);
                 }
                 if (dev.getControls().size()>=2) {
-                    dev.getControls().get(1).setIconOnView(context, second);
+                    ControlView cv = new ControlView(context,dev.getControls().get(1));
+                    cv.setView(second);
                 }
             }
 
@@ -171,37 +188,22 @@ public class DevicesListAdapter extends BaseAdapter implements ListAdapter {
         icon.setColorFilter(Color.WHITE);
     }
 
-    public void showControls(GridLayout v, Context context, Device dev) {
+    public void showControls(View parent,SectionView section, Device dev) {
 
-        int col=0;
+        SectionView currentSection = section;
+        View par = parent;
         for (int i = 0; i < dev.getControls().size(); i++) {
             Control ctrl = dev.getControls().get(i);
-            ArrayList<View> views = ctrl.getViews(context);
-            for (int j=0; j<views.size(); j++) {
-                v.addView(views.get(j));
-                col++;
-            }
-            if (ctrl.getStyle().equals(Control.STYLE_SLIDER)) col=0;
-
-            if (ctrl.isForceReturnLineAfter()) {
-                int gap = 5-col%5;
-                for (int j=0;j<gap;j++) {
-                    Space sp = new Space(context);
-                    GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-                    GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-                    lp.width  = GridLayout.LayoutParams.WRAP_CONTENT;
-                    lp.height= GridLayout.LayoutParams.WRAP_CONTENT;
-                    lp.setGravity(Gravity.CENTER_HORIZONTAL);
-                    lp.columnSpec = spec;
-                    sp.setLayoutParams(lp);
-                    v.addView(sp);
-
+            if (ctrl.isSection()) {
+                Log.d("TEST","Add section "+ctrl.getName());
+                currentSection = new SectionView(context,ctrl);
+                par = currentSection.render((LinearLayout) par,View.GONE);
+            } else {
+                if ((!ctrl.getName().equals("on") && !ctrl.getName().equals("off")) || dev.isMediacenterNavigation()) {
+                    currentSection.addControl(ctrl);
                 }
-                col=0;
             }
-
         }
-
     }
 
     private void expand(Context context, View v) {

@@ -6,8 +6,8 @@
     <dimen name="activity_category_horizontal_margin">2dp</dimen>
     <dimen name="activity_category_vertical_margin">2dp</dimen>
 
-    <dimen name="deviceIconWidth">50dp</dimen>
-    <dimen name="deviceIconHeigh">50dp</dimen>
+    <dimen name="deviceIconWidth">45dp</dimen>
+    <dimen name="deviceIconHeigh">45dp</dimen>
     <dimen name="controlIconWidth">60dp</dimen>
     <dimen name="controlIconHeigh">60dp</dimen>
     <dimen name="bigcontrolIconWidth">120dp</dimen>

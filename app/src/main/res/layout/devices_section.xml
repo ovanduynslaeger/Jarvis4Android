@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/section"
+>
+
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:id="@+id/section_header"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="Section"
+        android:id="@+id/section_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:textColor="#fe9c17"
+        android:paddingBottom="5dp"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/expander"
+        android:src="@drawable/ic_expand_more_black_24dp"
+        android:background="@android:color/white"
+        android:layout_alignParentRight="true"/>
+
+
+        <View
+            android:layout_width="wrap_content"
+            android:id="@+id/line"
+            android:layout_height="2dp"
+            android:background="@android:color/darker_gray"
+            android:layout_alignBottom="@+id/expander"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:id="@+id/controls"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom ="true"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:paddingEnd="3dp"
+        android:paddingStart="3dp"
+        android:columnCount="5"
+        android:background="@color/colorAppMenu">
+
+    </GridLayout>
+
+
+</LinearLayout>

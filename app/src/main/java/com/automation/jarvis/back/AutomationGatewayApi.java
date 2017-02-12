@@ -727,11 +727,9 @@ public class AutomationGatewayApi {
                     loc.setVisible(true);
                     while (keys.hasNext()) {
                         String currentDynamicKey = (String) keys.next();
-                        Log.v(TAG, "Key = " + currentDynamicKey);
 
                         // get the value of the dynamic key
                         String currentDynamicValue = cat.getString(currentDynamicKey);
-                        Log.v(TAG, "Value = " + currentDynamicValue);
 
                         //Is Active ?
                         if (currentDynamicValue.equals("1")) {
@@ -778,6 +776,7 @@ public class AutomationGatewayApi {
 
 
             JSONArray ctrls = deviceJsonStr.getJSONArray("cmds");
+            Log.v(TAG,"Number of controls found = " + ctrls.length());
 
             //Iterate on device
             for (int i = 0; i < ctrls.length(); i++) {
@@ -790,6 +789,8 @@ public class AutomationGatewayApi {
                     Info info = new Info(cmd.getString("id"),cmd.getString("name"));
                     info.setValue(cmd.getString("state"));
                     if (cmd.has("display") && cmd.getJSONObject("display").has("parameters")) {
+                        if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon.on"))
+                            info.setIconOn(cmd.getJSONObject("display").getJSONObject("parameters").getString("jarvis4mobile.icon.on"));
                         if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.favorite.order"))
                             info.setFavoriteOrder(cmd.getJSONObject("display").getJSONObject("parameters").getInt("jarvis4mobile.favorite.order"));
                         if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.type"))
@@ -802,7 +803,7 @@ public class AutomationGatewayApi {
                 //action/controls
                 if (cmd.getString("isVisible").equals("1") && cmd.getString("type").equals("action")) {
                     Control ctrl = new Control(cmd.getString("id"), cmd.getString("name"));
-                    if (cmd.getJSONObject("display").has("forceReturnLineAfter"))
+                    if (cmd.has("display") && cmd.getJSONObject("display").has("forceReturnLineAfter"))
                         ctrl.setForceReturnLineAfter(cmd.getJSONObject("display").getString("forceReturnLineAfter").equals("1"));
                     if (cmd.has("display") && cmd.getJSONObject("display").has("parameters")) {
                         if (cmd.getJSONObject("display").getJSONObject("parameters").has("jarvis4mobile.icon"))
@@ -831,7 +832,7 @@ public class AutomationGatewayApi {
             }
         }
         catch (final JSONException e) {
-            Log.e(TAG, "Json parsing error: " + e.getMessage());
+            Log.e(TAG, "Json parsing error: " + e.getMessage() + " for device " + deviceJsonStr);
         }
         return device;
 

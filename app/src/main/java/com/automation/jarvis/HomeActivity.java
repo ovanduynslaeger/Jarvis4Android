@@ -139,17 +139,18 @@ public class HomeActivity extends AppCompatActivity
         if (info.getIconOn() != null) {
             resID = res.getIdentifier(info.getIconOn(),"drawable",context.getPackageName());
         }
+        Log.d("test",info.getValue());
+        if (info.getValue().equals("1"))
+            action.setColorFilter(R.color.statusOn);
+        if (info.getValue().equals("0"))
+            action.setColorFilter(R.color.statusOn);
+        //action.setColorFilter(R.color.statusOff);
+        action.setColorFilter(R.color.statusOn);
         if (resID != 0) {
             action.setImageResource(resID);
         } else {
             action.setImageResource(R.drawable.ic_help_outline_black_24dp);
         }
-//        action.setBackground(context.getDrawable(R.drawable.control_circle));
-        if (info.getValue().equals("1"))
-            action.setColorFilter(R.color.statusOn);
-        if (info.getValue().equals("0"))
-            action.setColorFilter(R.color.statusOff);
-        action.setTag(this);
     }
 
 }

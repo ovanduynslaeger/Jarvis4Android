@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/deviceListPadding"
     android:orientation="vertical"
+    android:spinnerMode="dialog"
     tools:context="com.automation.jarvis.DevicesListActivity">
 
     <RelativeLayout
@@ -70,13 +71,20 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/linearsection"
+        android:id="@+id/controls"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom ="true"
         android:visibility="gone"
-        />
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:paddingEnd="3dp"
+        android:paddingStart="3dp"
+        android:columnCount="5"
+        android:background="@color/colorAppMenu">
+    </GridLayout>
 
 </LinearLayout>

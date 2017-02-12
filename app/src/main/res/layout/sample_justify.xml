@@ -1,121 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_dashboard"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.automation.jarvis2.com.automation.jarvis.DashboardActivity"
     android:orientation="vertical"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentStart="true"
-    android:weightSum="1">
+    android:id="@+id/linearsection"
+    >
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/section"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:id="@+id/section_header"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Section"
+            android:id="@+id/section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:textColor="#fe9c17"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/expander"
+            android:src="@drawable/ic_expand_more_black_24dp"
+            android:background="@android:color/white"
+            android:layout_alignParentRight="true"/>
 
 
-    <!-- Header -->
+        <View
+            android:layout_width="wrap_content"
+            android:id="@+id/line"
+            android:layout_height="2dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:background="@android:color/darker_gray"
+            android:layout_alignBottom="@+id/expander"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
     <GridLayout
-        android:layout_width="match_parent"
-        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:id="@+id/controls"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom ="true"
         android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:paddingEnd="3dp"
+        android:paddingStart="3dp"
         android:columnCount="5"
-        >
-
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/control_circle"
-            android:layout_gravity="center_horizontal"
-            />
-
-        <ImageButton
-            android:background="@drawable/control_circle"
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:background="@drawable/control_circle"
-            android:layout_columnWeight="1"
-            android:id="@+id/imageButton3"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:background="@drawable/control_circle"
-            android:id="@+id/imageButton4"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Space
-            android:layout_columnWeight="1"
-            android:background="@drawable/control_circle"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/control_circle"
-            android:layout_gravity="center_horizontal"
-            />
-
-        <ImageButton
-            android:background="@drawable/control_circle"
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:background="@drawable/control_circle"
-            android:layout_columnWeight="1"
-            android:id="@+id/imageButton3"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:background="@drawable/control_circle"
-            android:id="@+id/imageButton4"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:src="@drawable/ic_filter_tilt_shift_black_24dp"
-            android:layout_columnWeight="1"
-            android:background="@drawable/control_circle"
-            android:id="@+id/imageButton4"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        android:background="@color/colorAppMenu">
 
 
     </GridLayout>
 
-</RelativeLayout>
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/section2"
+        >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:id="@+id/section_header2"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Section 22222"
+                android:id="@+id/section_title2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:textColor="#fe9c17"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/expander2"
+                android:src="@drawable/ic_expand_more_black_24dp"
+                android:background="@android:color/white"
+                android:layout_alignParentRight="true"/>
+
+
+            <View
+                android:layout_width="wrap_content"
+                android:id="@+id/line2"
+                android:layout_height="2dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="2dp"
+                android:background="@android:color/darker_gray"
+                android:layout_alignBottom="@+id/expander2"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:id="@+id/controls2"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom ="true"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:paddingEnd="3dp"
+            android:paddingStart="3dp"
+            android:columnCount="5"
+            android:background="@color/colorAppMenu">
+
+        </GridLayout>
+
+    </LinearLayout>
+</LinearLayout>

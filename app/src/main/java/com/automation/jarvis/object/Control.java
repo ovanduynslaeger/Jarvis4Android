@@ -3,19 +3,10 @@ package com.automation.jarvis.object;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.automation.jarvis.R;
 import com.automation.jarvis.back.AutomationGatewayApi;
-
-import java.util.ArrayList;
 
 /**
  * Created by Olivier on 31/12/2016.
@@ -215,119 +206,6 @@ public class Control {
         return AutomationGatewayApi.getInstance(context).sendCmd(this);
     }
 
-    public ArrayList<View> getViews(final Context context) {
-        ArrayList<View> views = new ArrayList<View>();
-        ImageButton button;
-
-        // Separator
-        if (this.isSeparator()) {
-            TextView text = new TextView(context);
-            text.setText(this.getName());
-            GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 3f);
-            GridLayout.LayoutParams tlp = new GridLayout.LayoutParams();
-            tlp.setGravity(Gravity.LEFT);
-            tlp.columnSpec = spec;
-            text.setLayoutParams(tlp);
-            views.add(text);
-
-            button = new ImageButton(context);
-            spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-            lp.setGravity(Gravity.CENTER_HORIZONTAL);
-            lp.setMargins(0, 20, 0, 20);
-            lp.columnSpec = spec;
-            button.setLayoutParams(lp);
-            button.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-            button.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    //expand
-                }
-            });
-            views.add(button);
-
-        }
-
-
-        if (this.getStyle().equals(Control.STYLE_BUTTON)) {
-            button = (ImageButton) addButton(context);
-            views.add(button);
-        }
-
-        if (this.getStyle().equals(Control.STYLE_SLIDER)) {
-            SeekBar sb = new SeekBar(context);
-            sb.setMax(this.getMaxValue()/this.getStep());
-            sb.setBottom(0);
-            sb.setProgress(this.getDefaultValue()/this.getStep());
-            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-            lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 4);
-            lp.setGravity(Gravity.FILL_HORIZONTAL | Gravity.CENTER);
-            sb.setLayoutParams(lp);
-
-            button = (ImageButton) addButton(context);
-            button.setTag(this);
-            views.add(button);
-            sb.setTag(this);
-            sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    Control ctrl = (Control) seekBar.getTag();
-                    ctrl.setValue(progress*ctrl.getStep());
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                }
-            });
-            views.add(sb);
-        }
-
-        return views;
-    }
-
-    private View addButton(Context context) {
-
-        final Context ctx = context;
-        ImageButton button = new ImageButton(context);
-
-
-        GridLayout.Spec spec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-        lp.setGravity(Gravity.CENTER_HORIZONTAL);
-        lp.setMargins(0, 20, 0, 20);
-        lp.columnSpec = spec;
-        button.setTag(this);
-        button.setLayoutParams(lp);
-        setIconOnView(context,button);
-
-        button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Control ctrl = (Control) v.getTag();
-                AutomationGatewayApi.getInstance(ctx).sendCmd(ctrl);
-            }
-        });
-
-        return button;
-    }
-
-    private void setControlColor(ImageView icon, String color) {
-        int c = Color.parseColor(color);
-        setControlColor(icon,c);
-    }
-
-    private void setControlColor(ImageView icon, int color) {
-        //ShapeDrawable shape = (ShapeDrawable) icon.getBackground();
-        GradientDrawable bgShape = (GradientDrawable) icon.getBackground();
-        bgShape.setColor(color);
-    }
-
     public void setIconOnView(Context context, ImageButton action) {
         Resources res = context.getResources();
 
@@ -345,7 +223,7 @@ public class Control {
         action.setTag(this);
     }
 
-    public boolean isSeparator() {
+    public boolean isSection() {
         return getType().equals("separator");
     }
 
